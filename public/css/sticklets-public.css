@@ -1,0 +1,116 @@
+.sticklet {
+	position: fixed;
+	z-index: 999999;
+}
+
+.sticklet__img {
+	display: block;
+	width: 100%;
+	height: 100%;
+}
+
+.sticklet a {
+	display: block;
+}
+
+.sticklet--hidden {
+	display: none;
+}
+
+.sticklet--cropped .sticklet__img {
+	object-fit: cover;
+}
+
+/* Animations - Appear */
+.sticklet--animate-fade-in {
+	animation: stickletsFadeIn 400ms ease forwards;
+}
+
+.sticklet--animate-slide-up {
+	animation: stickletsSlideUp 400ms ease forwards;
+}
+
+.sticklet--animate-slide-down {
+	animation: stickletsSlideDown 400ms ease forwards;
+}
+
+.sticklet--animate-slide-left {
+	animation: stickletsSlideLeft 400ms ease forwards;
+}
+
+.sticklet--animate-slide-right {
+	animation: stickletsSlideRight 400ms ease forwards;
+}
+
+/* Animations - Exit */
+.sticklet--animate-fade-out {
+	animation: stickletsFadeOut 400ms ease forwards;
+}
+
+.sticklet--animate-slide-up-out {
+	animation: stickletsSlideUpOut 400ms ease forwards;
+}
+
+.sticklet--animate-slide-down-out {
+	animation: stickletsSlideDownOut 400ms ease forwards;
+}
+
+.sticklet--animate-slide-left-out {
+	animation: stickletsSlideLeftOut 400ms ease forwards;
+}
+
+.sticklet--animate-slide-right-out {
+	animation: stickletsSlideRightOut 400ms ease forwards;
+}
+
+/* Keyframes - Appear */
+@keyframes stickletsFadeIn {
+	from { opacity: 0; }
+	to   { opacity: 1; }
+}
+
+@keyframes stickletsSlideUp {
+	from { transform: translateY(32px); opacity: 0; }
+	to   { transform: translateY(0); opacity: 1; }
+}
+
+@keyframes stickletsSlideDown {
+	from { transform: translateY(-32px); opacity: 0; }
+	to   { transform: translateY(0); opacity: 1; }
+}
+
+@keyframes stickletsSlideLeft {
+	from { transform: translateX(32px); opacity: 0; }
+	to   { transform: translateX(0); opacity: 1; }
+}
+
+@keyframes stickletsSlideRight {
+	from { transform: translateX(-32px); opacity: 0; }
+	to   { transform: translateX(0); opacity: 1; }
+}
+
+/* Keyframes - Exit */
+@keyframes stickletsFadeOut {
+	from { opacity: 1; }
+	to   { opacity: 0; }
+}
+
+@keyframes stickletsSlideUpOut {
+	from { transform: translateY(0); opacity: 1; }
+	to   { transform: translateY(-32px); opacity: 0; }
+}
+
+@keyframes stickletsSlideDownOut {
+	from { transform: translateY(0); opacity: 1; }
+	to   { transform: translateY(32px); opacity: 0; }
+}
+
+@keyframes stickletsSlideLeftOut {
+	from { transform: translateX(0); opacity: 1; }
+	to   { transform: translateX(-32px); opacity: 0; }
+}
+
+@keyframes stickletsSlideRightOut {
+	from { transform: translateX(0); opacity: 1; }
+	to   { transform: translateX(32px); opacity: 0; }
+}

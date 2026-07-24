@@ -1,0 +1,173 @@
+(function() {
+	function calculateCenterPosition(sticklet) {
+		var positionY = sticklet.getAttribute('data-position-y');
+		var positionX = sticklet.getAttribute('data-position-x');
+		var offsetX = parseInt(sticklet.getAttribute('data-position-offset-x')) || 0;
+		var offsetY = parseInt(sticklet.getAttribute('data-position-offset-y')) || 0;
+		var sizeMode = sticklet.getAttribute('data-size-mode');
+		var sizeWidth = parseInt(sticklet.getAttribute('data-size-width')) || 0;
+		var sizeHeight = parseInt(sticklet.getAttribute('data-size-height')) || 0;
+
+		var img = sticklet.querySelector('img');
+		var imgWidth, imgHeight;
+
+		if (sizeMode === 'cropped' && sizeWidth > 0 && sizeHeight > 0) {
+			imgWidth = sizeWidth;
+			imgHeight = sizeHeight;
+		} else if (img && img.naturalWidth > 0 && img.naturalHeight > 0) {
+			imgWidth = img.naturalWidth;
+			imgHeight = img.naturalHeight;
+		} else if (img) {
+			imgWidth = img.offsetWidth || img.clientWidth || 0;
+			imgHeight = img.offsetHeight || img.clientHeight || 0;
+		} else {
+			imgWidth = 0;
+			imgHeight = 0;
+		}
+
+		var windowWidth = window.innerWidth || document.documentElement.clientWidth;
+		var windowHeight = window.innerHeight || document.documentElement.clientHeight;
+
+		if (positionY === 'y-center') {
+			var top = Math.round(windowHeight / 2 - imgHeight / 2 + offsetY);
+			sticklet.style.top = top + 'px';
+			sticklet.style.bottom = 'auto';
+		}
+
+		if (positionX === 'x-center') {
+			var left = Math.round(windowWidth / 2 - imgWidth / 2 + offsetX);
+			sticklet.style.left = left + 'px';
+			sticklet.style.right = 'auto';
+		}
+	}
+
+	function showSticklet(sticklet) {
+		var duration = parseInt(sticklet.getAttribute('data-timing-duration')) || 0;
+		var delay = parseInt(sticklet.getAttribute('data-timing-delay')) || 0;
+		var animationAppear = sticklet.getAttribute('data-animation-appear') || 'none';
+		var animationExit = sticklet.getAttribute('data-animation-exit') || 'none';
+
+		calculateCenterPosition(sticklet);
+
+		function appear() {
+			sticklet.classList.remove('sticklet--hidden');
+
+			if (animationAppear !== 'none') {
+				sticklet.classList.add('sticklet--animate-' + animationAppear);
+
+				sticklet.addEventListener('animationend', function handler() {
+					sticklet.classList.remove('sticklet--animate-' + animationAppear);
+					sticklet.removeEventListener('animationend', handler);
+				});
+			}
+
+			if (duration > 0) {
+				var exitDelay = delay + duration;
+
+				setTimeout(function() {
+					if (!sticklet || !sticklet.parentNode) {
+						return;
+					}
+
+					if (animationExit !== 'none') {
+						sticklet.classList.add('sticklet--animate-' + animationExit);
+
+						sticklet.addEventListener('animationend', function handler() {
+							if (sticklet && sticklet.parentNode) {
+								sticklet.parentNode.removeChild(sticklet);
+							}
+							sticklet.removeEventListener('animationend', handler);
+						});
+					} else {
+						sticklet.parentNode.removeChild(sticklet);
+					}
+				}, exitDelay);
+			}
+		}
+
+		if (delay > 0) {
+			setTimeout(appear, delay);
+		} else {
+			appear();
+		}
+	}
+
+	function isElementInViewport(el) {
+		var rect = el.getBoundingClientRect();
+		return (
+			rect.top <= (window.innerHeight || document.documentElement.clientHeight) &&
+			rect.bottom >= 0
+		);
+	}
+
+	function initSticklet(sticklet) {
+		var trigger = sticklet.getAttribute('data-trigger');
+
+		if (trigger === 'load') {
+			showSticklet(sticklet);
+			return;
+		}
+
+		if (trigger === 'specific') {
+			var specific = sticklet.getAttribute('data-trigger-specific');
+
+			if (specific === 'scroll_px') {
+				var px = parseInt(sticklet.getAttribute('data-trigger-scroll-px')) || 0;
+				var scrollHandler = function() {
+					if (window.scrollY >= px) {
+						showSticklet(sticklet);
+						window.removeEventListener('scroll', scrollHandler);
+					}
+				};
+				window.addEventListener('scroll', scrollHandler);
+				scrollHandler();
+			}
+
+			if (specific === 'scroll_element') {
+				var selector = sticklet.getAttribute('data-trigger-scroll-element');
+				if (selector) {
+					var targetEl = document.querySelector(selector);
+					if (targetEl) {
+						var checkVisibility = function() {
+							if (isElementInViewport(targetEl)) {
+								showSticklet(sticklet);
+								window.removeEventListener('scroll', checkVisibility);
+								window.removeEventListener('resize', checkVisibility);
+							}
+						};
+						window.addEventListener('scroll', checkVisibility);
+						window.addEventListener('resize', checkVisibility);
+						checkVisibility();
+					}
+				}
+			}
+
+			if (specific === 'scroll_bottom') {
+				var offset = parseInt(sticklet.getAttribute('data-trigger-scroll-bottom-offset')) || 0;
+				var bottomHandler = function() {
+					var scrollBottom = window.scrollY + window.innerHeight;
+					var pageBottom = document.body.scrollHeight - offset;
+					if (scrollBottom >= pageBottom) {
+						showSticklet(sticklet);
+						window.removeEventListener('scroll', bottomHandler);
+					}
+				};
+				window.addEventListener('scroll', bottomHandler);
+				bottomHandler();
+			}
+		}
+	}
+
+	function initAllSticklets() {
+		var sticklets = document.querySelectorAll('.sticklet');
+		for (var i = 0; i < sticklets.length; i++) {
+			initSticklet(sticklets[i]);
+		}
+	}
+
+	if (document.readyState === 'loading') {
+		document.addEventListener('DOMContentLoaded', initAllSticklets);
+	} else {
+		initAllSticklets();
+	}
+})();

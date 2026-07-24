@@ -1,0 +1,15 @@
+# Copyright (C) 2026 Marc Deep Foix
+# This file is distributed under the GPL v2 or later.
+msgid ""
+msgstr ""
+"Project-Id-Version: Sticklets 1.0.1\n"
+"Report-Msgid-Bugs-To: https://defoix.com/sticklets\n"
+"Last-Translator: Marc Deep Foix <marc@defoix.com>\n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"POT-Creation-Date: 2026-07-07T00:00:00+00:00\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"X-Generator: Sticklets Plugin\n"
+"X-Domain: sticklets\n"
