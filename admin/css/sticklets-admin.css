@@ -1,6 +1,17 @@
 .sticklets-conditional {
-	margin-left: 1.5em;
+	margin-left: 1.75em;
   /*margin-left: var(--wp--preset--spacing--30);*/
   margin-top: 0.5em;
 	/*margin-top: var(--wp--preset--spacing--20);*/
+}
+
+.description {
+  font-size: 0.875rem;
+  /*font-size: var(--wp--preset--font-size--small);*/
+  color: #6c757d;
+  /*color: var(--wp--preset--color--secondary);*/
+  margin-top: 0.25em;
+  /*margin-top: var(--wp--preset--spacing--10);*/
+  padding-left: 0.125em;
+  font-style: italic;
 }

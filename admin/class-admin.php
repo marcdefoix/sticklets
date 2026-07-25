@@ -8,12 +8,24 @@ class Sticklets_Admin {
 	public function init() {
 		add_action( 'init', array( 'Sticklets_Post_Type', 'register' ) );
 		add_action( 'add_meta_boxes', array( 'Sticklets_Meta_Boxes', 'add_meta_boxes' ) );
+    add_action( 'do_meta_boxes', array( $this, 'reposition_featured_image_metabox' ) );
 		add_action( 'save_post', array( 'Sticklets_Meta_Boxes', 'save_meta' ) );
 		add_action( 'admin_enqueue_scripts', array( $this, 'enqueue_admin_assets' ) );
 		add_filter( 'manage_sticklet_posts_columns', array( $this, 'add_sticklet_columns' ) );
 		add_action( 'manage_sticklet_posts_custom_column', array( $this, 'render_sticklet_columns' ), 10, 2 );
 	}
 
+  public function reposition_featured_image_metabox() {
+    remove_meta_box( 'postimagediv', 'sticklet', 'side' );
+    add_meta_box(
+      'postimagediv',
+      __( 'Sticklet Image', 'sticklets' ),
+      'post_thumbnail_meta_box',
+      'sticklet',
+      'normal',
+      'high'
+    );
+  }
 	public function enqueue_admin_assets( $hook ) {
 		global $post_type;
 
@@ -51,7 +63,7 @@ class Sticklets_Admin {
 				$new_columns['size']       = __( 'Size', 'sticklets' );
 				$new_columns['position']   = __( 'Position', 'sticklets' );
 				$new_columns['animation']  = __( 'Animation', 'sticklets' );
-				$new_columns['click_url']  = __( 'Click URL', 'sticklets' );
+				$new_columns['action']     = __( 'Action', 'sticklets' );
 			}
 		}
 
@@ -72,7 +84,7 @@ class Sticklets_Admin {
 				break;
 
 			case 'visibility':
-				$scope      = get_post_meta( $post_id, '_sticklet_visibility_scope', true );
+				$scope      = get_post_meta( $post_id, '_sticklet_visibility', true );
 				$home       = get_post_meta( $post_id, '_sticklet_visibility_home', true );
 				$blog       = get_post_meta( $post_id, '_sticklet_visibility_blog', true );
 				$search     = get_post_meta( $post_id, '_sticklet_visibility_search', true );
@@ -110,29 +122,26 @@ class Sticklets_Admin {
 				break;
 
 			case 'trigger':
-				$mode     = get_post_meta( $post_id, '_sticklet_trigger_mode', true );
-				$specific = get_post_meta( $post_id, '_sticklet_trigger_specific', true );
+				$mode     = get_post_meta( $post_id, '_sticklet_trigger', true );
 				$scroll_px = get_post_meta( $post_id, '_sticklet_trigger_scroll_px', true );
 				$element  = get_post_meta( $post_id, '_sticklet_trigger_scroll_element', true );
 				$bottom   = get_post_meta( $post_id, '_sticklet_trigger_scroll_bottom_offset', true );
 
 				if ( 'load' === $mode ) {
 					_e( 'On page load', 'sticklets' );
-				} elseif ( 'specific' === $mode ) {
-					if ( 'scroll_px' === $specific ) {
-						_e( 'After scrolling', 'sticklets' );
-						echo ' — ' . esc_html( $scroll_px ) . ' px';
-					} elseif ( 'scroll_element' === $specific ) {
-						_e( 'When element visible', 'sticklets' );
-						if ( $element ) {
-							echo ' — <code>' . esc_html( $element ) . '</code>';
-						}
-					} elseif ( 'scroll_bottom' === $specific ) {
-						_e( 'Page bottom', 'sticklets' );
-						if ( $bottom > 0 ) {
-							echo ' — ' . esc_html( $bottom ) . ' px offset';
-						}
-					}
+				} elseif ( 'scroll_px' === $mode ) {
+          _e( 'After scrolling', 'sticklets' );
+          echo ' — ' . esc_html( $scroll_px ) . ' px';
+        } elseif ( 'scroll_element' === $mode ) {
+          _e( 'When element visible', 'sticklets' );
+          if ( $element ) {
+            echo ' — <code>' . esc_html( $element ) . '</code>';
+          }
+        } elseif ( 'scroll_bottom' === $mode ) {
+          _e( 'Page bottom', 'sticklets' );
+          if ( $bottom > 0 ) {
+            echo ' — ' . esc_html( $bottom ) . ' px offset';
+          }
 				} else {
 					echo '—';
 				}
@@ -158,25 +167,40 @@ class Sticklets_Admin {
 				break;
 
 			case 'size':
-				$size_mode = get_post_meta( $post_id, '_sticklet_size_mode', true ) ?: 'original';
-				$width     = intval( get_post_meta( $post_id, '_sticklet_size_width', true ) );
-				$height    = intval( get_post_meta( $post_id, '_sticklet_size_height', true ) );
+        $width         = intval( get_post_meta( $post_id, '_sticklet_size_width', true ) );
+        $height        = intval( get_post_meta( $post_id, '_sticklet_size_height', true ) );
+        $mobile_width  = intval( get_post_meta( $post_id, '_sticklet_size_mobile_width', true ) );
+        $mobile_height = intval( get_post_meta( $post_id, '_sticklet_size_mobile_height', true ) );
+        $parts         = array();
 
-				if ( 'cropped' === $size_mode ) {
-					$parts = array( __( 'Cropped', 'sticklets' ) );
-					if ( $width > 0 ) {
-						$parts[] = $width . ' px';
-					}
-					if ( $height > 0 ) {
-						$parts[] = $height . ' px';
-					}
-					echo esc_html( implode( ' × ', $parts ) );
-				} elseif ( 'original' === $size_mode ) {
-					_e( 'Original', 'sticklets' );
-				} else {
-					echo '—';
-				}
-				break;
+        if ( $width > 0 || $height > 0 ) {
+          $desktop = array();
+          if ( $width > 0 ) {
+            $desktop[] = $width . ' px';
+          }
+          if ( $height > 0 ) {
+            $desktop[] = $height . ' px';
+          }
+          $parts[] = __( 'Desktop:', 'sticklets' ) . ' ' . implode( ' × ', $desktop );
+        }
+
+        if ( $mobile_width > 0 || $mobile_height > 0 ) {
+          $mobile = array();
+          if ( $mobile_width > 0 ) {
+            $mobile[] = $mobile_width . ' px';
+          }
+          if ( $mobile_height > 0 ) {
+            $mobile[] = $mobile_height . ' px';
+          }
+          $parts[] = __( 'Mobile:', 'sticklets' ) . ' ' . implode( ' × ', $mobile );
+        }
+
+        if ( empty( $parts ) ) {
+          _e( 'Original', 'sticklets' );
+        } else {
+          echo esc_html( implode( ' | ', $parts ) );
+        }
+        break;
 
 			case 'position':
 				$position_y = get_post_meta( $post_id, '_sticklet_position_y', true ) ?: 'y-bottom';
@@ -185,16 +209,13 @@ class Sticklets_Admin {
 				$offset_y   = intval( get_post_meta( $post_id, '_sticklet_position_offset_y', true ) );
 				$parts      = array();
 
-				$parts[] = str_replace( 'y-', '', $position_y );
-				$parts[] = str_replace( 'x-', '', $position_x );
-				if ( $offset_x ) {
-					$parts[] = sprintf( __( 'X offset: %d px', 'sticklets' ), $offset_x );
-				}
-				if ( $offset_y ) {
-					$parts[] = sprintf( __( 'Y offset: %d px', 'sticklets' ), $offset_y );
+				$parts[] = ucfirst( str_replace( 'y-', '', $position_y ) );
+				$parts[] = ucfirst( str_replace( 'x-', '', $position_x ) );
+				if ( $offset_x !== 0 || $offset_y !== 0 ) {
+					$parts[] = sprintf( 'X:%d Y:%d', $offset_x, $offset_y );
 				}
 
-				echo esc_html( implode( ' • ', $parts ) );
+				echo esc_html( implode( ' / ', $parts ) );
 				break;
 
 			case 'animation':
@@ -203,10 +224,10 @@ class Sticklets_Admin {
 				$parts  = array();
 
 				if ( 'none' !== $appear ) {
-					$parts[] = sprintf( __( 'Appear: %s', 'sticklets' ), ucfirst( $appear ) );
+					$parts[] = sprintf( __( 'In: %s', 'sticklets' ), str_replace( '-', ' ', $appear ) );
 				}
 				if ( 'none' !== $exit ) {
-					$parts[] = sprintf( __( 'Exit: %s', 'sticklets' ), ucfirst( $exit ) );
+					$parts[] = sprintf( __( 'Out: %s', 'sticklets' ), str_replace( '-', ' ', $exit ) );
 				}
 
 				if ( empty( $parts ) ) {
@@ -216,12 +237,37 @@ class Sticklets_Admin {
 				}
 				break;
 
-			case 'click_url':
-				$url = get_post_meta( $post_id, '_sticklet_click_url', true );
-				if ( $url ) {
-					echo esc_html( $url );
-				} else {
-					echo '—';
+			case 'action':
+				$action      = get_post_meta( $post_id, '_sticklet_action', true ) ?: 'none';
+				$action_url       = get_post_meta( $post_id, '_sticklet_action_url', true );
+				$action_scroll_to = get_post_meta( $post_id, '_sticklet_action_scroll_to', true );
+
+				switch ( $action ) {
+					case 'none':
+						echo '—';
+						break;
+
+					case 'url':
+						if ( $action_url ) {
+							echo esc_html( wp_parse_url( $action_url, PHP_URL_HOST ) ?: $action_url );
+						} else {
+							echo '—';
+						}
+						break;
+
+					case 'scroll':
+						echo __( 'Scroll to', 'sticklets' );
+						if ( $action_scroll_to ) {
+							echo ' <code>' . esc_html( $action_scroll_to ) . '</code>';
+						}
+						break;
+
+					case 'scrolltop':
+						_e( 'Scroll to top', 'sticklets' );
+						break;
+
+					default:
+						echo '—';
 				}
 				break;
 		}

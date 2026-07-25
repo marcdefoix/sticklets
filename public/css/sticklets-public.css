@@ -17,8 +17,8 @@
 	display: none;
 }
 
-.sticklet--cropped .sticklet__img {
-	object-fit: cover;
+.sticklet--sized .sticklet__img {
+  object-fit: cover;
 }
 
 /* Animations - Appear */
@@ -70,22 +70,22 @@
 }
 
 @keyframes stickletsSlideUp {
-	from { transform: translateY(32px); opacity: 0; }
+	from { transform: translateY(48px); opacity: 0; }
 	to   { transform: translateY(0); opacity: 1; }
 }
 
 @keyframes stickletsSlideDown {
-	from { transform: translateY(-32px); opacity: 0; }
+	from { transform: translateY(-48px); opacity: 0; }
 	to   { transform: translateY(0); opacity: 1; }
 }
 
 @keyframes stickletsSlideLeft {
-	from { transform: translateX(32px); opacity: 0; }
+	from { transform: translateX(48px); opacity: 0; }
 	to   { transform: translateX(0); opacity: 1; }
 }
 
 @keyframes stickletsSlideRight {
-	from { transform: translateX(-32px); opacity: 0; }
+	from { transform: translateX(-48px); opacity: 0; }
 	to   { transform: translateX(0); opacity: 1; }
 }
 
@@ -97,20 +97,20 @@
 
 @keyframes stickletsSlideUpOut {
 	from { transform: translateY(0); opacity: 1; }
-	to   { transform: translateY(-32px); opacity: 0; }
+	to   { transform: translateY(-48px); opacity: 0; }
 }
 
 @keyframes stickletsSlideDownOut {
 	from { transform: translateY(0); opacity: 1; }
-	to   { transform: translateY(32px); opacity: 0; }
+	to   { transform: translateY(48px); opacity: 0; }
 }
 
 @keyframes stickletsSlideLeftOut {
 	from { transform: translateX(0); opacity: 1; }
-	to   { transform: translateX(-32px); opacity: 0; }
+	to   { transform: translateX(-48px); opacity: 0; }
 }
 
 @keyframes stickletsSlideRightOut {
 	from { transform: translateX(0); opacity: 1; }
-	to   { transform: translateX(32px); opacity: 0; }
+	to   { transform: translateX(48px); opacity: 0; }
 }
