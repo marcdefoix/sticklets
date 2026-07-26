@@ -44,7 +44,7 @@ class Sticklets_Meta_Boxes {
 		$animation_exit               = get_post_meta( $post->ID, '_sticklet_animation_exit', true );
 		$action                       = get_post_meta( $post->ID, '_sticklet_action', true ) ?: 'none';
 		$action_url                   = get_post_meta( $post->ID, '_sticklet_action_url', true );
-		$action_url_new_tab            = get_post_meta( $post->ID, '_sticklet_action_url_new_tab', true );
+		$action_url_new_tab           = get_post_meta( $post->ID, '_sticklet_action_url_new_tab', true );
 		$action_scroll_to             = get_post_meta( $post->ID, '_sticklet_action_scroll_to', true );
 		$action_scroll_offset         = intval( get_post_meta( $post->ID, '_sticklet_action_scroll_offset', true ) );
 		?>
@@ -92,7 +92,7 @@ class Sticklets_Meta_Boxes {
 							</label>
 							<div class="visibility-ids-wrap sticklets-conditional" style="display:<?php echo $visibility_ids_active ? 'block' : 'none'; ?>;">
 								<label for="sticklet_visibility_ids" style="min-width: 2rem;"><?php _e( 'IDs', 'sticklets' ); ?></label>
-								<input type="text" id="sticklet_visibility_ids" name="sticklet_visibility_ids" value="<?php echo esc_attr( $visibility_ids ); ?>" class="regular-text" placeholder="<?php esc_attr_e( 'e.g. 12, 45, 78', 'sticklets' ); ?>" />
+								<input type="text" id="sticklet_visibility_ids" name="sticklet_visibility_ids" value="<?php echo esc_attr( $visibility_ids ); ?>" class="regular-text" placeholder="<?php esc_attr_e( 'e.g. 12, 45, 78', 'sticklets' ); ?>"/>
 								<p class="description"><?php _e( 'Comma-separated list of post, page or custom post type IDs.', 'sticklets' ); ?></p>
 							</div>
 						</div>
@@ -116,7 +116,7 @@ class Sticklets_Meta_Boxes {
             </label>
             <div class="trigger-scroll-px sticklets-conditional" style="display:<?php echo $trigger === 'scroll_px' ? 'block' : 'none'; ?>;">
               <label for="sticklet_trigger_scroll_px" style="min-width: 5rem;"><?php _e( 'Amount (px)', 'sticklets' ); ?></label>
-              <input type="number" id="sticklet_trigger_scroll_px" name="sticklet_trigger_scroll_px" value="<?php echo esc_attr( $trigger_scroll_px ); ?>" class="small-text" min="0" step="1" placeholder="500" />
+              <input type="number" id="sticklet_trigger_scroll_px" name="sticklet_trigger_scroll_px" value="<?php echo esc_attr( $trigger_scroll_px ); ?>" class="small-text" min="0" step="1" placeholder="500"/>
               <p class="description"><?php _e( 'Number of pixels scrolled down the page.', 'sticklets' ); ?></p>
             </div>
             <br>
@@ -126,7 +126,7 @@ class Sticklets_Meta_Boxes {
             </label>
             <div class="trigger-scroll-element sticklets-conditional" style="display:<?php echo $trigger === 'scroll_element' ? 'block' : 'none'; ?>;">
               <label for="sticklet_trigger_scroll_element" style="min-width: 5rem;"><?php _e( 'Selector', 'sticklets' ); ?></label>
-              <input type="text" id="sticklet_trigger_scroll_element" name="sticklet_trigger_scroll_element" value="<?php echo esc_attr( $trigger_scroll_element ); ?>" class="regular-text" placeholder="<?php esc_attr_e( '#my-section', 'sticklets' ); ?>" />
+              <input type="text" id="sticklet_trigger_scroll_element" name="sticklet_trigger_scroll_element" value="<?php echo esc_attr( $trigger_scroll_element ); ?>" class="regular-text" placeholder="<?php esc_attr_e( '#my-section', 'sticklets' ); ?>"/>
               <p class="description"><?php _e( 'CSS selector of the element to watch for, e.g. #features.', 'sticklets' ); ?></p>
             </div>
             <br>
@@ -136,7 +136,7 @@ class Sticklets_Meta_Boxes {
             </label>
             <div class="trigger-scroll-bottom sticklets-conditional" style="display:<?php echo $trigger === 'scroll_bottom' ? 'block' : 'none'; ?>;">
               <label for="sticklet_trigger_scroll_bottom_offset" style="min-width: 5rem;"><?php _e( 'Offset (px)', 'sticklets' ); ?></label>
-              <input type="number" id="sticklet_trigger_scroll_bottom_offset" name="sticklet_trigger_scroll_bottom_offset" value="<?php echo esc_attr( $trigger_scroll_bottom_offset ); ?>" class="small-text" min="0" step="1" placeholder="0" />
+              <input type="number" id="sticklet_trigger_scroll_bottom_offset" name="sticklet_trigger_scroll_bottom_offset" value="<?php echo esc_attr( $trigger_scroll_bottom_offset ); ?>" class="small-text" min="0" step="1" placeholder="0"/>
               <p class="description"><?php _e( 'Pixels before the very bottom. 0 = exact end.', 'sticklets' ); ?></p>
             </div>
           </fieldset>
@@ -211,7 +211,7 @@ class Sticklets_Meta_Boxes {
 						<p class="description"><?php _e( 'Horizontal fine-tuning. Use negative values to shift left.', 'sticklets' ); ?></p>
 						<br>
 						<label for="sticklet_position_offset_y" style="min-width: 6rem;"><?php _e( 'Offset Y (px)', 'sticklets' ); ?></label>
-						<input type="number" id="sticklet_position_offset_y" name="sticklet_position_offset_y" value="<?php echo esc_attr( $position_offset_y ); ?>" class="small-text" step="1" />
+						<input type="number" id="sticklet_position_offset_y" name="sticklet_position_offset_y" value="<?php echo esc_attr( $position_offset_y ); ?>" class="small-text" step="1" placeholder="32"/>
 						<p class="description"><?php _e( 'Vertical fine-tuning. Use negative values to shift up.', 'sticklets' ); ?></p>
 					</fieldset>
 				</td>
@@ -263,7 +263,7 @@ class Sticklets_Meta_Boxes {
 						</label>
 						<div class="action-url sticklets-conditional" style="display:<?php echo $action === 'url' ? 'block' : 'none'; ?>;">
 							<label for="sticklet_action_url" style="min-width: 2rem;"><?php _e( 'URL', 'sticklets' ); ?></label>
-							<input type="url" id="sticklet_action_url" name="sticklet_action_url" value="<?php echo esc_url( $action_url ); ?>" class="regular-text" placeholder="https://example.com" />
+							<input type="url" id="sticklet_action_url" name="sticklet_action_url" value="<?php echo esc_url( $action_url ); ?>" class="regular-text" placeholder="https://example.com"/>
 							<br>
 							<label>
 								<input type="checkbox" name="sticklet_action_url_new_tab" style="margin-left: 2.375rem;" value="1" <?php checked( $action_url_new_tab, '1' ); ?>>
@@ -277,11 +277,11 @@ class Sticklets_Meta_Boxes {
 						</label>
 						<div class="action-scroll sticklets-conditional" style="display:<?php echo $action === 'scroll' ? 'block' : 'none'; ?>;">
 							<label for="sticklet_action_scroll_to" style="min-width: 5rem;"><?php _e( 'Selector', 'sticklets' ); ?></label>
-							<input type="text" id="sticklet_action_scroll_to" name="sticklet_action_scroll_to" value="<?php echo esc_attr( $action_scroll_to ); ?>" class="regular-text" placeholder="<?php esc_attr_e( '#my-section', 'sticklets' ); ?>" />
+							<input type="text" id="sticklet_action_scroll_to" name="sticklet_action_scroll_to" value="<?php echo esc_attr( $action_scroll_to ); ?>" class="regular-text" placeholder="<?php esc_attr_e( '#my-section', 'sticklets' ); ?>"/>
 							<p class="description"><?php _e( 'CSS selector of the target element, e.g. #contact.', 'sticklets' ); ?></p>
 							<br>
 							<label for="sticklet_action_scroll_offset" style="min-width: 5rem;"><?php _e( 'Offset (px)', 'sticklets' ); ?></label>
-							<input type="number" id="sticklet_action_scroll_offset" name="sticklet_action_scroll_offset" value="<?php echo esc_attr( $action_scroll_offset ); ?>" class="small-text" min="0" step="1" placeholder="0" />
+							<input type="number" id="sticklet_action_scroll_offset" name="sticklet_action_scroll_offset" value="<?php echo esc_attr( $action_scroll_offset ); ?>" class="small-text" min="0" step="1" placeholder="0"/>
 							<p class="description"><?php _e( 'Pixels above the target. Useful for fixed headers.', 'sticklets' ); ?></p>
 						</div>
 						<br>
@@ -315,7 +315,7 @@ class Sticklets_Meta_Boxes {
 		}
 
 		$fields = array(
-			'_sticklet_visibility'             => 'sanitize_text_field',
+			'_sticklet_visibility'                   => 'sanitize_text_field',
 			'_sticklet_visibility_home'              => 'intval',
 			'_sticklet_visibility_blog'              => 'intval',
 			'_sticklet_visibility_search'            => 'intval',
@@ -324,7 +324,7 @@ class Sticklets_Meta_Boxes {
 			'_sticklet_visibility_ids'               => function( $value ) {
 				return preg_replace( '/[^0-9,]/', '', $value );
 			},
-			'_sticklet_trigger'                 => 'sanitize_text_field',
+			'_sticklet_trigger'                      => 'sanitize_text_field',
 			'_sticklet_trigger_scroll_px'            => 'intval',
 			'_sticklet_trigger_scroll_element'       => 'sanitize_text_field',
 			'_sticklet_trigger_scroll_bottom_offset' => 'intval',
@@ -340,9 +340,9 @@ class Sticklets_Meta_Boxes {
 			'_sticklet_position_offset_y'            => 'intval',
 			'_sticklet_animation_appear'             => 'sanitize_text_field',
 			'_sticklet_animation_exit'               => 'sanitize_text_field',
-			'_sticklet_action'                  => 'sanitize_text_field',
+			'_sticklet_action'                       => 'sanitize_text_field',
 			'_sticklet_action_url'                   => 'esc_url_raw',
-			'_sticklet_action_url_new_tab'               => 'intval',
+			'_sticklet_action_url_new_tab'           => 'intval',
 			'_sticklet_action_scroll_to'             => 'sanitize_text_field',
 			'_sticklet_action_scroll_offset'         => 'intval',
 		);

@@ -1,8 +1,8 @@
 (function() {
 	function handleAction(sticklet) {
-		var actionType = sticklet.getAttribute('data-action-type') || 'none';
+		var action = sticklet.getAttribute('data-action') || 'none';
 
-		if (actionType === 'scroll' || actionType === 'scrolltop') {
+		if (action === 'scroll' || action === 'scrolltop') {
 			var actionLink = sticklet.querySelector('.sticklet__action');
 			if (!actionLink) {
 				return;
@@ -11,7 +11,7 @@
 			actionLink.addEventListener('click', function(e) {
 				e.preventDefault();
 
-				if (actionType === 'scroll') {
+				if (action === 'scroll') {
 					var selector = sticklet.getAttribute('data-action-scroll-to');
 					var offset = parseInt(sticklet.getAttribute('data-action-scroll-offset')) || 0;
 
@@ -22,7 +22,7 @@
 							window.scrollTo({ top: top, behavior: 'smooth' });
 						}
 					}
-				} else if (actionType === 'scrolltop') {
+				} else if (action === 'scrolltop') {
 					window.scrollTo({ top: 0, behavior: 'smooth' });
 				}
 			});

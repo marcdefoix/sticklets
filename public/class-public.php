@@ -195,7 +195,7 @@ class Sticklets_Public {
     $data_attrs .= ' data-size-mobile-height="' . esc_attr( $size_mobile_height ) . '"';
 		$data_attrs .= ' data-animation-appear="' . esc_attr( $animation_appear ) . '"';
 		$data_attrs .= ' data-animation-exit="' . esc_attr( $animation_exit ) . '"';
-		$data_attrs .= ' data-action-type="' . esc_attr( $action ) . '"';
+		$data_attrs .= ' data-action="' . esc_attr( $action ) . '"';
 
 		if ( 'url' === $action ) {
 			$data_attrs .= ' data-action-url="' . esc_url( $action_url ) . '"';
