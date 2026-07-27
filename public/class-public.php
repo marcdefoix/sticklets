@@ -113,31 +113,46 @@ class Sticklets_Public {
 			return;
 		}
 
-		$trigger                 = get_post_meta( $sticklet->ID, '_sticklet_trigger', true ) ?: 'load';
-		$trigger_specific             = get_post_meta( $sticklet->ID, '_sticklet_trigger_specific', true ) ?: 'scroll_px';
-		$trigger_scroll_px            = intval( get_post_meta( $sticklet->ID, '_sticklet_trigger_scroll_px', true ) );
-		$trigger_scroll_element       = get_post_meta( $sticklet->ID, '_sticklet_trigger_scroll_element', true );
-		$trigger_scroll_bottom_offset = intval( get_post_meta( $sticklet->ID, '_sticklet_trigger_scroll_bottom_offset', true ) );
-		$timing_duration              = intval( get_post_meta( $sticklet->ID, '_sticklet_timing_duration', true ) );
-		$timing_delay                 = intval( get_post_meta( $sticklet->ID, '_sticklet_timing_delay', true ) );
-		$size_width                   = intval( get_post_meta( $sticklet->ID, '_sticklet_size_width', true ) );
-    $size_height                  = intval( get_post_meta( $sticklet->ID, '_sticklet_size_height', true ) );
-    $size_mobile_width            = intval( get_post_meta( $sticklet->ID, '_sticklet_size_mobile_width', true ) );
-    $size_mobile_height           = intval( get_post_meta( $sticklet->ID, '_sticklet_size_mobile_height', true ) );
-		$position_y                   = get_post_meta( $sticklet->ID, '_sticklet_position_y', true ) ?: 'y-bottom';
-		$position_x                   = get_post_meta( $sticklet->ID, '_sticklet_position_x', true ) ?: 'x-right';
-		$position_offset_x            = intval( get_post_meta( $sticklet->ID, '_sticklet_position_offset_x', true ) );
-		$position_offset_y            = intval( get_post_meta( $sticklet->ID, '_sticklet_position_offset_y', true ) );
-		$animation_appear             = get_post_meta( $sticklet->ID, '_sticklet_animation_appear', true ) ?: 'none';
-		$animation_exit               = get_post_meta( $sticklet->ID, '_sticklet_animation_exit', true ) ?: 'none';
-		$action                  = get_post_meta( $sticklet->ID, '_sticklet_action', true ) ?: 'none';
-		$action_url                   = get_post_meta( $sticklet->ID, '_sticklet_action_url', true );
+		$trigger                          = get_post_meta( $sticklet->ID, '_sticklet_trigger', true ) ?: 'load';
+		$trigger_scroll_px                = intval( get_post_meta( $sticklet->ID, '_sticklet_trigger_scroll_px', true ) );
+		$trigger_scroll_element           = get_post_meta( $sticklet->ID, '_sticklet_trigger_scroll_element', true );
+		$trigger_scroll_element_offset    = intval( get_post_meta( $sticklet->ID, '_sticklet_trigger_scroll_element_offset', true ) );
+		$trigger_click_element            = get_post_meta( $sticklet->ID, '_sticklet_trigger_click_element', true );
+		$trigger_scroll_bottom_offset     = intval( get_post_meta( $sticklet->ID, '_sticklet_trigger_scroll_bottom_offset', true ) );
+		$timing_duration                  = intval( get_post_meta( $sticklet->ID, '_sticklet_timing_duration', true ) );
+		$timing_delay                     = intval( get_post_meta( $sticklet->ID, '_sticklet_timing_delay', true ) );
+		$position_y                       = get_post_meta( $sticklet->ID, '_sticklet_position_y', true ) ?: 'y-bottom';
+		$position_x                       = get_post_meta( $sticklet->ID, '_sticklet_position_x', true ) ?: 'x-right';
+		$position_offset_x                = intval( get_post_meta( $sticklet->ID, '_sticklet_position_offset_x', true ) );
+		$position_offset_y                = intval( get_post_meta( $sticklet->ID, '_sticklet_position_offset_y', true ) );
+		$size_width                       = intval( get_post_meta( $sticklet->ID, '_sticklet_size_width', true ) );
+    $size_height                      = intval( get_post_meta( $sticklet->ID, '_sticklet_size_height', true ) );
+    $size_mobile_width                = intval( get_post_meta( $sticklet->ID, '_sticklet_size_mobile_width', true ) );
+    $size_mobile_height               = intval( get_post_meta( $sticklet->ID, '_sticklet_size_mobile_height', true ) );
+		$animation_appear                 = get_post_meta( $sticklet->ID, '_sticklet_animation_appear', true ) ?: 'none';
+		$animation_exit                   = get_post_meta( $sticklet->ID, '_sticklet_animation_exit', true ) ?: 'none';
+		$action                           = get_post_meta( $sticklet->ID, '_sticklet_action', true ) ?: 'none';
+		$action_url                       = get_post_meta( $sticklet->ID, '_sticklet_action_url', true );
 		$action_url_new_tab               = get_post_meta( $sticklet->ID, '_sticklet_action_url_new_tab', true );
-		$action_scroll_to             = get_post_meta( $sticklet->ID, '_sticklet_action_scroll_to', true );
-		$action_scroll_offset         = intval( get_post_meta( $sticklet->ID, '_sticklet_action_scroll_offset', true ) );
+		$action_scroll_to                 = get_post_meta( $sticklet->ID, '_sticklet_action_scroll_to', true );
+		$action_scroll_offset             = intval( get_post_meta( $sticklet->ID, '_sticklet_action_scroll_offset', true ) );
+    $frequency                        = get_post_meta( $sticklet->ID, '_sticklet_frequency', true ) ?: 'always';
+    $frequency_times                  = intval( get_post_meta( $sticklet->ID, '_sticklet_frequency_times', true ) );
 
 		$classes     = array( 'sticklet' );
 		$style_parts = array();
+
+    if ( 'y-top' === $position_y ) {
+			$style_parts[] = 'top: ' . $position_offset_y . 'px';
+		} elseif ( 'y-bottom' === $position_y ) {
+			$style_parts[] = 'bottom: ' . $position_offset_y . 'px';
+		}
+
+		if ( 'x-left' === $position_x ) {
+			$style_parts[] = 'left: ' . $position_offset_x . 'px';
+		} elseif ( 'x-right' === $position_x ) {
+			$style_parts[] = 'right: ' . $position_offset_x . 'px';
+		}
 
 		if ( $size_width > 0 || $size_height > 0 ) {
       $classes[] = 'sticklet--sized';
@@ -150,18 +165,6 @@ class Sticklets_Public {
         $style_parts[] = 'height: ' . $size_height . 'px';
       }
     }
-
-		if ( 'y-top' === $position_y ) {
-			$style_parts[] = 'top: ' . $position_offset_y . 'px';
-		} elseif ( 'y-bottom' === $position_y ) {
-			$style_parts[] = 'bottom: ' . $position_offset_y . 'px';
-		}
-
-		if ( 'x-left' === $position_x ) {
-			$style_parts[] = 'left: ' . $position_offset_x . 'px';
-		} elseif ( 'x-right' === $position_x ) {
-			$style_parts[] = 'right: ' . $position_offset_x . 'px';
-		}
 
 		$style_attr = '';
 		if ( ! empty( $style_parts ) ) {
@@ -179,6 +182,9 @@ class Sticklets_Public {
         $data_attrs .= ' data-trigger-scroll-px="' . esc_attr( $trigger_scroll_px ) . '"';
     } elseif ( 'scroll_element' === $trigger ) {
         $data_attrs .= ' data-trigger-scroll-element="' . esc_attr( $trigger_scroll_element ) . '"';
+        $data_attrs .= ' data-trigger-scroll-element-offset="' . esc_attr( $trigger_scroll_element_offset ) . '"';
+    } elseif ( 'click_element' === $trigger ) {
+        $data_attrs .= ' data-trigger-click-element="' . esc_attr( $trigger_click_element ) . '"';
     } elseif ( 'scroll_bottom' === $trigger ) {
         $data_attrs .= ' data-trigger-scroll-bottom-offset="' . esc_attr( $trigger_scroll_bottom_offset ) . '"';
     }
@@ -204,6 +210,11 @@ class Sticklets_Public {
 			$data_attrs .= ' data-action-scroll-to="' . esc_attr( $action_scroll_to ) . '"';
 			$data_attrs .= ' data-action-scroll-offset="' . esc_attr( $action_scroll_offset ) . '"';
 		}
+
+    $data_attrs .= ' data-frequency="' . esc_attr( $frequency ) . '"';
+    if ( 'times' === $frequency ) {
+        $data_attrs .= ' data-frequency-times="' . esc_attr( $frequency_times ) . '"';
+    }
 
 		echo '<div class="' . implode( ' ', $classes ) . '"' . $data_attrs . $style_attr . '>';
 

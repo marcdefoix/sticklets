@@ -18,11 +18,13 @@
 
 		$('input[name="sticklet_trigger"]').on('change', function() {
 			var val = $(this).val();
-			$('.trigger-scroll-px, .trigger-scroll-element, .trigger-scroll-bottom').slideUp(200);
+			$('.trigger-scroll-px, .trigger-scroll-element, .trigger-click-element, .trigger-scroll-bottom').slideUp(200);
 			if (val === 'scroll_px') {
 				$('.trigger-scroll-px').slideDown(200);
 			} else if (val === 'scroll_element') {
 				$('.trigger-scroll-element').slideDown(200);
+			} else if (val === 'click_element') {
+				$('.trigger-click-element').slideDown(200);
 			} else if (val === 'scroll_bottom') {
 				$('.trigger-scroll-bottom').slideDown(200);
 			}
@@ -37,5 +39,13 @@
 				$('.action-scroll').slideDown(200);
 			}
 		});
+
+    $('input[name="sticklet_frequency"]').on('change', function() {
+      if ($(this).val() === 'times') {
+        $('.frequency-times').slideDown(200);
+      } else {
+        $('.frequency-times').slideUp(200);
+      }
+    });
 	});
 })(jQuery);
