@@ -294,8 +294,7 @@ class Sticklets_Admin {
 						break;
 
 					case 'once':
-						_e( 'Once', 'sticklets' );
-						break;
+					_e( 'Limited', 'sticklets' );
 
 					case 'times':
 						if ( $times > 0 ) {

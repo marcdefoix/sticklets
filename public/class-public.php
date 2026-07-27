@@ -127,6 +127,7 @@ class Sticklets_Public {
 		$position_offset_y                = intval( get_post_meta( $sticklet->ID, '_sticklet_position_offset_y', true ) );
 		$size_width                       = intval( get_post_meta( $sticklet->ID, '_sticklet_size_width', true ) );
     $size_height                      = intval( get_post_meta( $sticklet->ID, '_sticklet_size_height', true ) );
+    $size_mobile_custom               = intval( get_post_meta( $sticklet->ID, '_sticklet_size_mobile_custom', true ) );
     $size_mobile_width                = intval( get_post_meta( $sticklet->ID, '_sticklet_size_mobile_width', true ) );
     $size_mobile_height               = intval( get_post_meta( $sticklet->ID, '_sticklet_size_mobile_height', true ) );
 		$animation_appear                 = get_post_meta( $sticklet->ID, '_sticklet_animation_appear', true ) ?: 'none';
@@ -197,6 +198,7 @@ class Sticklets_Public {
 		$data_attrs .= ' data-position-offset-y="' . esc_attr( $position_offset_y ) . '"';
 		$data_attrs .= ' data-size-width="' . esc_attr( $size_width ) . '"';
     $data_attrs .= ' data-size-height="' . esc_attr( $size_height ) . '"';
+    $data_attrs .= ' data-size-mobile-custom="' . esc_attr( $size_mobile_custom ) . '"';
     $data_attrs .= ' data-size-mobile-width="' . esc_attr( $size_mobile_width ) . '"';
     $data_attrs .= ' data-size-mobile-height="' . esc_attr( $size_mobile_height ) . '"';
 		$data_attrs .= ' data-animation-appear="' . esc_attr( $animation_appear ) . '"';

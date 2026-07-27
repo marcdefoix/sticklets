@@ -49,6 +49,8 @@ class Sticklets_Meta_Boxes {
 		$size_width                   = $size_width !== '' ? intval( $size_width ) : 128;
 		$size_height                  = get_post_meta( $post->ID, '_sticklet_size_height', true );
 		$size_height                  = $size_height !== '' ? intval( $size_height ) : 128;
+    $size_mobile_custom           = get_post_meta( $post->ID, '_sticklet_size_mobile_custom', true );
+    $size_mobile_custom           = $size_mobile_custom ? 1 : 0;
     $size_mobile_width            = get_post_meta( $post->ID, '_sticklet_size_mobile_width', true );
     $size_mobile_width            = $size_mobile_width !== '' ? intval( $size_mobile_width ) : 48;
     $size_mobile_height           = get_post_meta( $post->ID, '_sticklet_size_mobile_height', true );
@@ -62,11 +64,11 @@ class Sticklets_Meta_Boxes {
 		$action_scroll_offset         = get_post_meta( $post->ID, '_sticklet_action_scroll_offset', true );
 		$action_scroll_offset         = $action_scroll_offset !== '' ? intval( $action_scroll_offset ) : 0;
     $frequency                    = get_post_meta( $post->ID, '_sticklet_frequency', true ) ?: 'always';
-    $frequency_times              = intval( get_post_meta( $post->ID, '_sticklet_frequency_times', true ) );
+    $frequency_times              = get_post_meta( $post->ID, '_sticklet_frequency_times', true ); 
+    $frequency_times              = $frequency_times !== '' ? intval( $frequency_times ) : 1;
 		?>
 
 		<table class="form-table">
-
 			<tr>
 				<th scope="row"><?php _e( 'Visibility', 'sticklets' ); ?></th>
 				<td>
@@ -128,7 +130,7 @@ class Sticklets_Meta_Boxes {
             <br>
             <label>
               <input type="radio" name="sticklet_trigger" value="scroll_px" <?php checked( $trigger, 'scroll_px' ); ?>>
-              <?php _e( 'Scroll', 'sticklets' ); ?>
+              <?php _e( 'Scrolled', 'sticklets' ); ?>
             </label>
             <div class="trigger-scroll-px sticklets-conditional" style="display:<?php echo $trigger === 'scroll_px' ? 'block' : 'none'; ?>;">
               <label for="sticklet_trigger_scroll_px" style="min-width: 5rem;"><?php _e( 'Amount (px)', 'sticklets' ); ?></label>
@@ -141,9 +143,9 @@ class Sticklets_Meta_Boxes {
               <?php _e( 'Scrolled to element', 'sticklets' ); ?>
             </label>
             <div class="trigger-scroll-element sticklets-conditional" style="display:<?php echo $trigger === 'scroll_element' ? 'block' : 'none'; ?>;">
-              <label for="sticklet_trigger_scroll_element" style="min-width: 5rem;"><?php _e( 'Element', 'sticklets' ); ?></label>
-              <input type="text" id="sticklet_trigger_scroll_element" name="sticklet_trigger_scroll_element" value="<?php echo esc_attr( $trigger_scroll_element ); ?>" class="regular-text" placeholder="<?php esc_attr_e( '#my-section', 'sticklets' ); ?>"/>
-              <p class="description"><?php _e( 'CSS selector of the element to watch for, e.g. #comments', 'sticklets' ); ?></p>
+              <label for="sticklet_trigger_scroll_element" style="min-width: 5rem;"><?php _e( 'Selector', 'sticklets' ); ?></label>
+              <input type="text" id="sticklet_trigger_scroll_element" name="sticklet_trigger_scroll_element" value="<?php echo esc_attr( $trigger_scroll_element ); ?>" class="regular-text" placeholder="<?php esc_attr_e( '#comments', 'sticklets' ); ?>"/>
+              <p class="description"><?php _e( 'CSS selector of the element to watch for.', 'sticklets' ); ?></p>
               <br>
               <label for="sticklet_trigger_scroll_element_offset" style="min-width: 5rem; display:block; margin-top:1rem;"><?php _e( 'Offset (px)', 'sticklets' ); ?></label>
               <input type="number" id="sticklet_trigger_scroll_element_offset" name="sticklet_trigger_scroll_element_offset" value="<?php echo esc_attr( $trigger_scroll_element_offset ); ?>" class="small-text" min="-9999" step="1" />
@@ -152,12 +154,12 @@ class Sticklets_Meta_Boxes {
             <br>
             <label>
               <input type="radio" name="sticklet_trigger" value="click_element" <?php checked( $trigger, 'click_element' ); ?>>
-              <?php _e( 'Element click', 'sticklets' ); ?>
+              <?php _e( 'Clicked element', 'sticklets' ); ?>
             </label>
             <div class="trigger-click-element sticklets-conditional" style="display:<?php echo $trigger === 'click_element' ? 'block' : 'none'; ?>;">
-              <label for="sticklet_trigger_click_element" style="min-width: 5rem;"><?php _e( 'Element', 'sticklets' ); ?></label>
-              <input type="text" id="sticklet_trigger_click_element" name="sticklet_trigger_click_element" value="<?php echo esc_attr( $trigger_click_element ); ?>" class="regular-text" placeholder="<?php esc_attr_e( '#my-button', 'sticklets' ); ?>"/>
-              <p class="description"><?php _e( 'CSS selector of the element to click, e.g. #button', 'sticklets' ); ?></p>
+              <label for="sticklet_trigger_click_element" style="min-width: 5rem;"><?php _e( 'Selector', 'sticklets' ); ?></label>
+              <input type="text" id="sticklet_trigger_click_element" name="sticklet_trigger_click_element" value="<?php echo esc_attr( $trigger_click_element ); ?>" class="regular-text" placeholder="<?php esc_attr_e( '#button', 'sticklets' ); ?>"/>
+              <p class="description"><?php _e( 'CSS selector of the element to click.', 'sticklets' ); ?></p>
             </div>
             <br>
             <label>
@@ -228,20 +230,26 @@ class Sticklets_Meta_Boxes {
             <legend class="screen-reader-text"><?php _e( 'Size', 'sticklets' ); ?></legend>
 
             <label for="sticklet_size_width" style="min-width: 5rem;"><?php _e( 'Width (px)', 'sticklets' ); ?></label>
-            <input type="number" id="sticklet_size_width" name="sticklet_size_width" value="<?php echo esc_attr( $size_width ?: '' ); ?>" class="small-text" min="1" step="1" />
+            <input type="number" id="sticklet_size_width" name="sticklet_size_width" value="<?php echo esc_attr( $size_width); ?>" class="small-text" min="1" step="1" />
             <p class="description"><?php _e( 'Width on desktop and tablet screens.', 'sticklets' ); ?></p>
             <br>
             <label for="sticklet_size_height" style="min-width: 5rem;"><?php _e( 'Height', 'sticklets' ); ?></label>
-            <input type="number" id="sticklet_size_height" name="sticklet_size_height" value="<?php echo esc_attr( $size_height ?: '' ); ?>" class="small-text" min="1" step="1" />
+            <input type="number" id="sticklet_size_height" name="sticklet_size_height" value="<?php echo esc_attr( $size_height); ?>" class="small-text" min="1" step="1" />
             <p class="description"><?php _e( 'Height on desktop and tablet screens.', 'sticklets' ); ?></p>
-            <h4>Mobile size (optional)</h4>
-            <label for="sticklet_size_mobile_width" style="min-width: 5rem;"><?php _e( 'Width (px)', 'sticklets' ); ?></label>
-            <input type="number" id="sticklet_size_mobile_width" name="sticklet_size_mobile_width" value="<?php echo esc_attr( $size_mobile_width ?: '' ); ?>" class="small-text" min="1" step="1" />
-            <p class="description"><?php _e( 'Width on screens smaller than 768px. Leave empty to use the desktop width.', 'sticklets' ); ?></p>
             <br>
-            <label for="sticklet_size_mobile_height" style="min-width: 5rem;"><?php _e( 'Height (px)', 'sticklets' ); ?></label>
-            <input type="number" id="sticklet_size_mobile_height" name="sticklet_size_mobile_height" value="<?php echo esc_attr( $size_mobile_height ?: '' ); ?>" class="small-text" min="1" step="1" />
-            <p class="description"><?php _e( 'Height on screens smaller than 768px. Leave empty to use the desktop height.', 'sticklets' ); ?></p>
+            <label class="sticklets-checkbox-label" style="display:block; margin-bottom:0.75rem;">
+              <input type="checkbox" id="sticklet_size_mobile_custom" name="sticklet_size_mobile_custom" value="1" <?php checked( $size_mobile_custom, 1 ); ?> />
+              <?php _e( 'Customize size on Mobile (screens smaller than 768px)', 'sticklets' ); ?>
+            </label>
+            <div class="mobile-size-fields sticklets-conditional" style="display:<?php echo $size_mobile_custom ? 'block' : 'none'; ?>;">
+              <label for="sticklet_size_mobile_width" style="min-width: 5rem;"><?php _e( 'Width (px)', 'sticklets' ); ?></label>
+              <input type="number" id="sticklet_size_mobile_width" name="sticklet_size_mobile_width" value="<?php echo esc_attr( $size_mobile_width); ?>" class="small-text" min="1" step="1" />
+              <p class="description"><?php _e( 'Width on mobile. Leave empty to use the desktop width.', 'sticklets' ); ?></p>
+              <br>
+              <label for="sticklet_size_mobile_height" style="min-width: 5rem;"><?php _e( 'Height (px)', 'sticklets' ); ?></label>
+              <input type="number" id="sticklet_size_mobile_height" name="sticklet_size_mobile_height" value="<?php echo esc_attr( $size_mobile_height); ?>" class="small-text" min="1" step="1" />
+              <p class="description"><?php _e( 'Height on mobile. Leave empty to use the desktop height.', 'sticklets' ); ?></p>
+            </div>
 
           </fieldset>
         </td>
@@ -307,8 +315,8 @@ class Sticklets_Meta_Boxes {
 						</label>
 						<div class="action-scroll sticklets-conditional" style="display:<?php echo $action === 'scroll' ? 'block' : 'none'; ?>;">
 							<label for="sticklet_action_scroll_to" style="min-width: 5rem;"><?php _e( 'Selector', 'sticklets' ); ?></label>
-							<input type="text" id="sticklet_action_scroll_to" name="sticklet_action_scroll_to" value="<?php echo esc_attr( $action_scroll_to ); ?>" class="regular-text" placeholder="<?php esc_attr_e( '#my-section', 'sticklets' ); ?>"/>
-							<p class="description"><?php _e( 'CSS selector of the target element, e.g. #contact', 'sticklets' ); ?></p>
+							<input type="text" id="sticklet_action_scroll_to" name="sticklet_action_scroll_to" value="<?php echo esc_attr( $action_scroll_to ); ?>" class="regular-text" placeholder="<?php esc_attr_e( '#contact', 'sticklets' ); ?>"/>
+							<p class="description"><?php _e( 'CSS selector of the target element.', 'sticklets' ); ?></p>
 							<br>
 							<label for="sticklet_action_scroll_offset" style="min-width: 5rem;"><?php _e( 'Offset (px)', 'sticklets' ); ?></label>
 					    <input type="number" id="sticklet_action_scroll_offset" name="sticklet_action_scroll_offset" value="<?php echo esc_attr( $action_scroll_offset ); ?>" class="small-text" min="0" step="1" />
@@ -329,22 +337,14 @@ class Sticklets_Meta_Boxes {
           <fieldset>
             <legend class="screen-reader-text"><?php _e( 'Frequency', 'sticklets' ); ?></legend>
             <label>
-              <input type="radio" name="sticklet_frequency" value="always" <?php checked( $frequency, 'always' ); ?>>
+              <input type="radio" name="sticklet_frequency" value="always" <?php checked( $frequency, 'always' ); ?> />
               <?php _e( 'Always', 'sticklets' ); ?>
             </label>
-            <p class="description"><?php _e( 'Shows every time the page is loaded.', 'sticklets' ); ?></p>
             <br>
             <label>
-              <input type="radio" name="sticklet_frequency" value="once" <?php checked( $frequency, 'once' ); ?>>
-              <?php _e( 'Once', 'sticklets' ); ?>
-            </label>
-            <p class="description"><?php _e( 'Shows only the first time the user visits.', 'sticklets' ); ?></p>
-            <br>
-            <label>
-              <input type="radio" name="sticklet_frequency" value="times" <?php checked( $frequency, 'times' ); ?>>
+              <input type="radio" name="sticklet_frequency" value="times" <?php checked( $frequency, 'times' ); ?> />
               <?php _e( 'Limited times', 'sticklets' ); ?>
             </label>
-            <p class="description"><?php _e( 'Shows only a set number of times per user.', 'sticklets' ); ?></p>
             <div class="frequency-times sticklets-conditional" style="display:<?php echo $frequency === 'times' ? 'block' : 'none'; ?>;">
               <label for="sticklet_frequency_times" style="min-width: 5rem;"><?php _e( 'Times', 'sticklets' ); ?></label>
               <input type="number" id="sticklet_frequency_times" name="sticklet_frequency_times" value="<?php echo esc_attr( $frequency_times ); ?>" class="small-text" min="1" step="1" />
@@ -352,8 +352,7 @@ class Sticklets_Meta_Boxes {
             </div>
           </fieldset>
         </td>
-    </tr>
-
+      </tr>
 		</table>
 		<?php
 	}
@@ -385,31 +384,31 @@ class Sticklets_Meta_Boxes {
 			'_sticklet_visibility_ids'               => function( $value ) {
 				return preg_replace( '/[^0-9,]/', '', $value );
 			},
-			'_sticklet_trigger'                      => 'sanitize_text_field',
+			'_sticklet_trigger'                           => 'sanitize_text_field',
 			'_sticklet_trigger_scroll_px'                 => 'intval',
 			'_sticklet_trigger_scroll_element'            => 'sanitize_text_field',
 			'_sticklet_trigger_scroll_element_offset'     => 'intval',
 			'_sticklet_trigger_click_element'             => 'sanitize_text_field',
 			'_sticklet_trigger_scroll_bottom_offset'      => 'intval',
-			'_sticklet_timing_duration'              => 'intval',
-			'_sticklet_timing_delay'                 => 'intval',
-			'_sticklet_position_x'                   => 'sanitize_text_field',
-			'_sticklet_position_y'                   => 'sanitize_text_field',
-			'_sticklet_position_offset_x'            => 'intval',
-			'_sticklet_position_offset_y'            => 'intval',
-      '_sticklet_size_width'                   => 'intval',
-			'_sticklet_size_height'                  => 'intval',
-      '_sticklet_size_mobile_width'            => 'intval',
-      '_sticklet_size_mobile_height'           => 'intval',
-			'_sticklet_animation_appear'             => 'sanitize_text_field',
-			'_sticklet_animation_exit'               => 'sanitize_text_field',
-			'_sticklet_action'                       => 'sanitize_text_field',
-			'_sticklet_action_url'                   => 'esc_url_raw',
-			'_sticklet_action_url_new_tab'           => 'intval',
-			'_sticklet_action_scroll_to'             => 'sanitize_text_field',
-			'_sticklet_action_scroll_offset'         => 'intval',
-			'_sticklet_frequency'                    => 'sanitize_text_field',
-			'_sticklet_frequency_times'              => 'intval',
+			'_sticklet_timing_duration'                   => 'intval',
+			'_sticklet_timing_delay'                      => 'intval',
+			'_sticklet_position_x'                        => 'sanitize_text_field',
+			'_sticklet_position_y'                        => 'sanitize_text_field',
+			'_sticklet_position_offset_x'                 => 'intval',
+			'_sticklet_position_offset_y'                 => 'intval',
+      '_sticklet_size_width'                        => 'intval',
+			'_sticklet_size_height'                       => 'intval',
+      '_sticklet_size_mobile_width'                 => 'intval',
+      '_sticklet_size_mobile_height'                => 'intval',
+			'_sticklet_animation_appear'                  => 'sanitize_text_field',
+			'_sticklet_animation_exit'                    => 'sanitize_text_field',
+			'_sticklet_action'                            => 'sanitize_text_field',
+			'_sticklet_action_url'                        => 'esc_url_raw',
+			'_sticklet_action_url_new_tab'                => 'intval',
+			'_sticklet_action_scroll_to'                  => 'sanitize_text_field',
+			'_sticklet_action_scroll_offset'              => 'intval',
+			'_sticklet_frequency'                         => 'sanitize_text_field',
+			'_sticklet_frequency_times'                   => 'intval',
 		);
 
 		foreach ( $fields as $meta_key => $sanitize ) {

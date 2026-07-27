@@ -68,6 +68,7 @@
 		var offsetY = parseInt(sticklet.getAttribute('data-position-offset-y')) || 0;
 		var sizeWidth = parseInt(sticklet.getAttribute('data-size-width')) || 0;
 		var sizeHeight = parseInt(sticklet.getAttribute('data-size-height')) || 0;
+		var sizeMobileCustom = parseInt(sticklet.getAttribute('data-size-mobile-custom')) || 0;
 		var sizeMobileWidth = parseInt(sticklet.getAttribute('data-size-mobile-width')) || 0;
 		var sizeMobileHeight = parseInt(sticklet.getAttribute('data-size-mobile-height')) || 0;
 
@@ -77,7 +78,7 @@
 
 		var activeWidth, activeHeight;
 
-		if (isMobile) {
+		if (isMobile && sizeMobileCustom) {
 			activeWidth = sizeMobileWidth > 0 ? sizeMobileWidth : sizeWidth;
 			activeHeight = sizeMobileHeight > 0 ? sizeMobileHeight : sizeHeight;
 		} else {

@@ -40,6 +40,14 @@
 			}
 		});
 
+    $('#sticklet_size_mobile_custom').on('change', function() {
+      if ($(this).is(':checked')) {
+        $('.mobile-size-fields').slideDown(200);
+      } else {
+        $('.mobile-size-fields').slideUp(200);
+      }
+    });
+
     $('input[name="sticklet_frequency"]').on('change', function() {
       if ($(this).val() === 'times') {
         $('.frequency-times').slideDown(200);
