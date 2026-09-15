@@ -40,7 +40,7 @@
 			}
 		});
 
-    $('#sticklet_size_mobile_custom').on('change', function() {
+    $('#sticklet_size_mobile').on('change', function() {
       if ($(this).is(':checked')) {
         $('.mobile-size-fields').slideDown(200);
       } else {

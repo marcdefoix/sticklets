@@ -1,4 +1,5 @@
 .sticklet {
+	--sticklet-animation-duration: 400ms;
 	position: fixed;
 	z-index: 999999;
 }
@@ -9,7 +10,7 @@
 	height: 100%;
 }
 
-.sticklet a {
+.sticklet__link {
 	display: block;
 }
 
@@ -23,94 +24,94 @@
 
 /* Animations - Appear */
 .sticklet--animate-fade-in {
-	animation: stickletsFadeIn 400ms ease forwards;
+	animation: stickletFadeIn var(--sticklet-animation-duration) ease forwards;
 }
 
 .sticklet--animate-slide-up {
-	animation: stickletsSlideUp 400ms ease forwards;
+	animation: stickletSlideUp var(--sticklet-animation-duration) ease forwards;
 }
 
 .sticklet--animate-slide-down {
-	animation: stickletsSlideDown 400ms ease forwards;
+	animation: stickletSlideDown var(--sticklet-animation-duration) ease forwards;
 }
 
 .sticklet--animate-slide-left {
-	animation: stickletsSlideLeft 400ms ease forwards;
+	animation: stickletSlideLeft var(--sticklet-animation-duration) ease forwards;
 }
 
 .sticklet--animate-slide-right {
-	animation: stickletsSlideRight 400ms ease forwards;
+	animation: stickletSlideRight var(--sticklet-animation-duration) ease forwards;
 }
 
 /* Animations - Exit */
 .sticklet--animate-fade-out {
-	animation: stickletsFadeOut 400ms ease forwards;
+	animation: stickletFadeOut var(--sticklet-animation-duration) ease forwards;
 }
 
 .sticklet--animate-slide-up-out {
-	animation: stickletsSlideUpOut 400ms ease forwards;
+	animation: stickletSlideUpOut var(--sticklet-animation-duration) ease forwards;
 }
 
 .sticklet--animate-slide-down-out {
-	animation: stickletsSlideDownOut 400ms ease forwards;
+	animation: stickletSlideDownOut var(--sticklet-animation-duration) ease forwards;
 }
 
 .sticklet--animate-slide-left-out {
-	animation: stickletsSlideLeftOut 400ms ease forwards;
+	animation: stickletSlideLeftOut var(--sticklet-animation-duration) ease forwards;
 }
 
 .sticklet--animate-slide-right-out {
-	animation: stickletsSlideRightOut 400ms ease forwards;
+	animation: stickletSlideRightOut var(--sticklet-animation-duration) ease forwards;
 }
 
 /* Keyframes - Appear */
-@keyframes stickletsFadeIn {
+@keyframes stickletFadeIn {
 	from { opacity: 0; }
 	to   { opacity: 1; }
 }
 
-@keyframes stickletsSlideUp {
+@keyframes stickletSlideUp {
 	from { transform: translateY(48px); opacity: 0; }
 	to   { transform: translateY(0); opacity: 1; }
 }
 
-@keyframes stickletsSlideDown {
+@keyframes stickletSlideDown {
 	from { transform: translateY(-48px); opacity: 0; }
 	to   { transform: translateY(0); opacity: 1; }
 }
 
-@keyframes stickletsSlideLeft {
+@keyframes stickletSlideLeft {
 	from { transform: translateX(48px); opacity: 0; }
 	to   { transform: translateX(0); opacity: 1; }
 }
 
-@keyframes stickletsSlideRight {
+@keyframes stickletSlideRight {
 	from { transform: translateX(-48px); opacity: 0; }
 	to   { transform: translateX(0); opacity: 1; }
 }
 
 /* Keyframes - Exit */
-@keyframes stickletsFadeOut {
+@keyframes stickletFadeOut {
 	from { opacity: 1; }
 	to   { opacity: 0; }
 }
 
-@keyframes stickletsSlideUpOut {
+@keyframes stickletSlideUpOut {
 	from { transform: translateY(0); opacity: 1; }
 	to   { transform: translateY(-48px); opacity: 0; }
 }
 
-@keyframes stickletsSlideDownOut {
+@keyframes stickletSlideDownOut {
 	from { transform: translateY(0); opacity: 1; }
 	to   { transform: translateY(48px); opacity: 0; }
 }
 
-@keyframes stickletsSlideLeftOut {
+@keyframes stickletSlideLeftOut {
 	from { transform: translateX(0); opacity: 1; }
 	to   { transform: translateX(-48px); opacity: 0; }
 }
 
-@keyframes stickletsSlideRightOut {
+@keyframes stickletSlideRightOut {
 	from { transform: translateX(0); opacity: 1; }
 	to   { transform: translateX(48px); opacity: 0; }
 }

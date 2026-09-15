@@ -54,7 +54,7 @@ class Sticklets_Public {
 	}
 
 	private function is_sticklet_visible( $sticklet ) {
-		$visibility      = get_post_meta( $sticklet->ID, '_sticklet_visibility', true );
+		$visibility            = get_post_meta( $sticklet->ID, '_sticklet_visibility', true );
 		$visibility_home       = get_post_meta( $sticklet->ID, '_sticklet_visibility_home', true );
 		$visibility_blog       = get_post_meta( $sticklet->ID, '_sticklet_visibility_blog', true );
 		$visibility_search     = get_post_meta( $sticklet->ID, '_sticklet_visibility_search', true );
@@ -121,26 +121,31 @@ class Sticklets_Public {
 		$trigger_scroll_bottom_offset     = intval( get_post_meta( $sticklet->ID, '_sticklet_trigger_scroll_bottom_offset', true ) );
 		$timing_duration                  = intval( get_post_meta( $sticklet->ID, '_sticklet_timing_duration', true ) );
 		$timing_delay                     = intval( get_post_meta( $sticklet->ID, '_sticklet_timing_delay', true ) );
-		$position_y                       = get_post_meta( $sticklet->ID, '_sticklet_position_y', true ) ?: 'y-bottom';
+		$position_y                       = get_post_meta( $sticklet->ID, '_sticklet_position_y', true ) ?: 'y-top';
 		$position_x                       = get_post_meta( $sticklet->ID, '_sticklet_position_x', true ) ?: 'x-right';
+		$position_y                       = in_array( $position_y, array( 'y-top', 'y-center', 'y-bottom' ), true ) ? $position_y : 'y-top';
+		$position_x                       = in_array( $position_x, array( 'x-left', 'x-center', 'x-right' ), true ) ? $position_x : 'x-right';
 		$position_offset_x                = intval( get_post_meta( $sticklet->ID, '_sticklet_position_offset_x', true ) );
 		$position_offset_y                = intval( get_post_meta( $sticklet->ID, '_sticklet_position_offset_y', true ) );
 		$size_width                       = intval( get_post_meta( $sticklet->ID, '_sticklet_size_width', true ) );
     $size_height                      = intval( get_post_meta( $sticklet->ID, '_sticklet_size_height', true ) );
-    $size_mobile_custom               = intval( get_post_meta( $sticklet->ID, '_sticklet_size_mobile_custom', true ) );
+    $size_mobile               = intval( get_post_meta( $sticklet->ID, '_sticklet_size_mobile', true ) );
     $size_mobile_width                = intval( get_post_meta( $sticklet->ID, '_sticklet_size_mobile_width', true ) );
     $size_mobile_height               = intval( get_post_meta( $sticklet->ID, '_sticklet_size_mobile_height', true ) );
 		$animation_appear                 = get_post_meta( $sticklet->ID, '_sticklet_animation_appear', true ) ?: 'none';
 		$animation_exit                   = get_post_meta( $sticklet->ID, '_sticklet_animation_exit', true ) ?: 'none';
 		$action                           = get_post_meta( $sticklet->ID, '_sticklet_action', true ) ?: 'none';
+		$action                           = in_array( $action, array( 'none', 'url', 'scroll', 'scrolltop' ), true ) ? $action : 'none';
 		$action_url                       = get_post_meta( $sticklet->ID, '_sticklet_action_url', true );
 		$action_url_new_tab               = get_post_meta( $sticklet->ID, '_sticklet_action_url_new_tab', true );
 		$action_scroll_to                 = get_post_meta( $sticklet->ID, '_sticklet_action_scroll_to', true );
 		$action_scroll_offset             = intval( get_post_meta( $sticklet->ID, '_sticklet_action_scroll_offset', true ) );
-    $frequency                        = get_post_meta( $sticklet->ID, '_sticklet_frequency', true ) ?: 'always';
-    $frequency_times                  = intval( get_post_meta( $sticklet->ID, '_sticklet_frequency_times', true ) );
+	$frequency                        = get_post_meta( $sticklet->ID, '_sticklet_frequency', true ) ?: 'always';
+	$frequency                        = in_array( $frequency, array( 'always', 'times' ), true ) ? $frequency : 'always';
+	$frequency_times                  = get_post_meta( $sticklet->ID, '_sticklet_frequency_times', true );
+	$frequency_times                  = $frequency_times !== '' ? max( 1, intval( $frequency_times ) ) : 1;
 
-		$classes     = array( 'sticklet' );
+		$classes     = array( 'sticklet', 'sticklet--hidden' );
 		$style_parts = array();
 
     if ( 'y-top' === $position_y ) {
@@ -175,10 +180,6 @@ class Sticklets_Public {
 		$data_attrs  = ' data-sticklet-id="' . esc_attr( $sticklet->ID ) . '"';
 		$data_attrs .= ' data-trigger="' . esc_attr( $trigger ) . '"';
 
-    if ( 'load' !== $trigger ) {
-        $classes[] = 'sticklet--hidden';
-    }
-
     if ( 'scroll_px' === $trigger ) {
         $data_attrs .= ' data-trigger-scroll-px="' . esc_attr( $trigger_scroll_px ) . '"';
     } elseif ( 'scroll_element' === $trigger ) {
@@ -198,7 +199,7 @@ class Sticklets_Public {
 		$data_attrs .= ' data-position-offset-y="' . esc_attr( $position_offset_y ) . '"';
 		$data_attrs .= ' data-size-width="' . esc_attr( $size_width ) . '"';
     $data_attrs .= ' data-size-height="' . esc_attr( $size_height ) . '"';
-    $data_attrs .= ' data-size-mobile-custom="' . esc_attr( $size_mobile_custom ) . '"';
+    $data_attrs .= ' data-size-mobile="' . esc_attr( $size_mobile ) . '"';
     $data_attrs .= ' data-size-mobile-width="' . esc_attr( $size_mobile_width ) . '"';
     $data_attrs .= ' data-size-mobile-height="' . esc_attr( $size_mobile_height ) . '"';
 		$data_attrs .= ' data-animation-appear="' . esc_attr( $animation_appear ) . '"';
@@ -222,14 +223,14 @@ class Sticklets_Public {
 
 		if ( 'url' === $action && $action_url ) {
 			$target = $action_url_new_tab ? ' target="_blank" rel="noopener noreferrer"' : '';
-			echo '<a href="' . esc_url( $action_url ) . '"' . $target . '>';
+			echo '<a href="' . esc_url( $action_url ) . '"' . $target . ' class="sticklet__link">';
 		} elseif ( in_array( $action, array( 'scroll', 'scrolltop' ) ) ) {
 			echo '<a href="#" class="sticklet__action">';
 		}
 
 		echo '<img src="' . esc_url( $image_url ) . '" alt="" class="sticklet__img" />';
 
-		if ( in_array( $action, array( 'url', 'scroll', 'scrolltop' ) ) ) {
+		if ( ( 'url' === $action && $action_url ) || in_array( $action, array( 'scroll', 'scrolltop' ), true ) ) {
 			echo '</a>';
 		}
 

@@ -127,6 +127,7 @@ class Sticklets_Admin {
 				$mode          = get_post_meta( $post_id, '_sticklet_trigger', true );
 				$scroll_px     = intval( get_post_meta( $post_id, '_sticklet_trigger_scroll_px', true ) );
 				$element       = get_post_meta( $post_id, '_sticklet_trigger_scroll_element', true );
+        $element_offset = intval(get_post_meta( $post_id, '_sticklet_trigger_scroll_element_offset', true ));
 				$click_element = get_post_meta( $post_id, '_sticklet_trigger_click_element', true );
 				$bottom        = intval( get_post_meta( $post_id, '_sticklet_trigger_scroll_bottom_offset', true ) );
 
@@ -142,6 +143,9 @@ class Sticklets_Admin {
 						if ( $element ) {
 							echo ' — <code>' . esc_html( $element ) . '</code>';
 						}
+            if ( $element_offset !== 0 ) {
+                echo ' — ' . esc_html( $element_offset ) . 'px';
+            }
 						break;
 					case 'click_element':
 						echo __( 'Click', 'sticklets' );
@@ -180,7 +184,7 @@ class Sticklets_Admin {
 				break;
 
 			case 'position':
-				$position_y = get_post_meta( $post_id, '_sticklet_position_y', true ) ?: 'y-bottom';
+				$position_y = get_post_meta( $post_id, '_sticklet_position_y', true ) ?: 'y-top';
 				$position_x = get_post_meta( $post_id, '_sticklet_position_x', true ) ?: 'x-right';
 				$offset_x   = intval( get_post_meta( $post_id, '_sticklet_position_offset_x', true ) );
 				$offset_y   = intval( get_post_meta( $post_id, '_sticklet_position_offset_y', true ) );
@@ -254,6 +258,8 @@ class Sticklets_Admin {
 				$action           = get_post_meta( $post_id, '_sticklet_action', true ) ?: 'none';
 				$action_url       = get_post_meta( $post_id, '_sticklet_action_url', true );
 				$action_scroll_to = get_post_meta( $post_id, '_sticklet_action_scroll_to', true );
+				$action_scroll_offset = intval( get_post_meta( $post_id, '_sticklet_action_scroll_offset', true ) );
+				$action_url_new_tab = get_post_meta( $post_id, '_sticklet_action_url_new_tab', true );
 
 				switch ( $action ) {
 					case 'none':
@@ -263,6 +269,9 @@ class Sticklets_Admin {
 					case 'url':
 						if ( $action_url ) {
 							echo esc_html( wp_parse_url( $action_url, PHP_URL_HOST ) ?: $action_url );
+							if ( $action_url_new_tab ) {
+								echo ' ' . esc_html__( '(new tab)', 'sticklets' );
+							}
 						} else {
 							echo '—';
 						}
@@ -272,6 +281,9 @@ class Sticklets_Admin {
 						echo __( 'Scroll to', 'sticklets' );
 						if ( $action_scroll_to ) {
 							echo ' <code>' . esc_html( $action_scroll_to ) . '</code>';
+						}
+						if ( $action_scroll_offset !== 0 ) {
+							echo ' ' . sprintf( esc_html__( '(%dpx)', 'sticklets' ), $action_scroll_offset );
 						}
 						break;
 
@@ -286,22 +298,16 @@ class Sticklets_Admin {
 
 			case 'frequency':
 				$frequency = get_post_meta( $post_id, '_sticklet_frequency', true ) ?: 'always';
-				$times     = intval( get_post_meta( $post_id, '_sticklet_frequency_times', true ) );
+				$frequency = in_array( $frequency, array( 'always', 'times' ), true ) ? $frequency : 'always';
+				$times     = max( 1, intval( get_post_meta( $post_id, '_sticklet_frequency_times', true ) ) );
 
 				switch ( $frequency ) {
 					case 'always':
 						_e( 'Always', 'sticklets' );
 						break;
 
-					case 'once':
-					_e( 'Limited', 'sticklets' );
-
 					case 'times':
-						if ( $times > 0 ) {
-							echo sprintf( __( '%d times', 'sticklets' ), $times );
-						} else {
-							_e( 'Limited', 'sticklets' );
-						}
+						echo sprintf( __( '%d times', 'sticklets' ), $times );
 						break;
 
 					default:

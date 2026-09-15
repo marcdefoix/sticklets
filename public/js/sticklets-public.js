@@ -1,34 +1,60 @@
 (function() {
-	function checkFrequency(sticklet) {
+	function getStorageValue(key) {
+		try {
+			return localStorage.getItem(key);
+		} catch (error) {
+			return null;
+		}
+	}
+
+	function setStorageValue(key, value) {
+		try {
+			localStorage.setItem(key, value);
+		} catch (error) {
+			// Continue without persistence when storage is unavailable.
+		}
+	}
+
+	function getFrequency(sticklet) {
 		var frequency = sticklet.getAttribute('data-frequency') || 'always';
+		return frequency === 'times' ? 'times' : 'always';
+	}
+
+	function getFrequencyStorageKey(sticklet) {
+		return 'sticklets_seen_' + sticklet.getAttribute('data-sticklet-id');
+	}
+
+	function checkFrequency(sticklet) {
+		var frequency = getFrequency(sticklet);
 
 		if (frequency === 'always') {
 			return true;
 		}
 
-		var stickletId = sticklet.getAttribute('data-sticklet-id');
-		var storageKey = 'sticklets_seen_' + stickletId;
+		var maxTimes = Math.max(1, parseInt(sticklet.getAttribute('data-frequency-times'), 10) || 1);
+		var seen = parseInt(getStorageValue(getFrequencyStorageKey(sticklet)), 10) || 0;
 
-		if (frequency === 'once') {
-			if (localStorage.getItem(storageKey)) {
-				return false;
-			}
-			localStorage.setItem(storageKey, '1');
-			return true;
+		return seen < maxTimes;
+	}
+
+	function consumeFrequency(sticklet) {
+		if (getFrequency(sticklet) === 'times') {
+			var storageKey = getFrequencyStorageKey(sticklet);
+			var seen = parseInt(getStorageValue(storageKey), 10) || 0;
+			setStorageValue(storageKey, seen + 1);
 		}
+	}
 
-		if (frequency === 'times') {
-			var maxTimes = parseInt(sticklet.getAttribute('data-frequency-times')) || 1;
-			var seen = parseInt(localStorage.getItem(storageKey)) || 0;
-
-			if (seen >= maxTimes) {
-				return false;
-			}
-			localStorage.setItem(storageKey, seen + 1);
-			return true;
-		}
-
-		return true;
+	function debounce(fn, wait) {
+		var timeout;
+		return function() {
+			var context = this;
+			var args = arguments;
+			clearTimeout(timeout);
+			timeout = setTimeout(function() {
+				fn.apply(context, args);
+			}, wait);
+		};
 	}
 
 	function handleAction(sticklet) {
@@ -48,7 +74,7 @@
 					var offset = parseInt(sticklet.getAttribute('data-action-scroll-offset')) || 0;
 
 					if (selector) {
-						var target = document.querySelector(selector);
+						var target = getQueryElement(selector);
 						if (target) {
 							var top = target.getBoundingClientRect().top + window.scrollY - offset;
 							window.scrollTo({ top: top, behavior: 'smooth' });
@@ -61,14 +87,14 @@
 		}
 	}
 
-	function calculateCenterPosition(sticklet) {
+	function calculateSizeAndPosition(sticklet) {
 		var positionY = sticklet.getAttribute('data-position-y');
 		var positionX = sticklet.getAttribute('data-position-x');
 		var offsetX = parseInt(sticklet.getAttribute('data-position-offset-x')) || 0;
 		var offsetY = parseInt(sticklet.getAttribute('data-position-offset-y')) || 0;
 		var sizeWidth = parseInt(sticklet.getAttribute('data-size-width')) || 0;
 		var sizeHeight = parseInt(sticklet.getAttribute('data-size-height')) || 0;
-		var sizeMobileCustom = parseInt(sticklet.getAttribute('data-size-mobile-custom')) || 0;
+		var sizeMobile = parseInt(sticklet.getAttribute('data-size-mobile')) || 0;
 		var sizeMobileWidth = parseInt(sticklet.getAttribute('data-size-mobile-width')) || 0;
 		var sizeMobileHeight = parseInt(sticklet.getAttribute('data-size-mobile-height')) || 0;
 
@@ -78,7 +104,7 @@
 
 		var activeWidth, activeHeight;
 
-		if (isMobile && sizeMobileCustom) {
+		if (isMobile && sizeMobile) {
 			activeWidth = sizeMobileWidth > 0 ? sizeMobileWidth : sizeWidth;
 			activeHeight = sizeMobileHeight > 0 ? sizeMobileHeight : sizeHeight;
 		} else {
@@ -123,55 +149,114 @@
 		}
 	}
 
+  function getQueryElement(selector) {
+    try {
+      return selector ? document.querySelector(selector) : null;
+    } catch (error) {
+      return null;
+    }
+  }
+
+	function getAnimationValue(value, type) {
+		var allowed = type === 'appear'
+			? ['none', 'fade-in', 'slide-up', 'slide-down', 'slide-left', 'slide-right']
+			: ['none', 'fade-out', 'slide-up-out', 'slide-down-out', 'slide-left-out', 'slide-right-out'];
+
+		return allowed.indexOf(value) !== -1 ? value : 'none';
+	}
+
+	function getAnimationName(animation) {
+		return 'sticklet' + animation.split('-').map(function(part) {
+			return part.charAt(0).toUpperCase() + part.slice(1);
+		}).join('');
+	}
+
 	function showSticklet(sticklet) {
 		var duration = parseInt(sticklet.getAttribute('data-timing-duration')) || 0;
 		var delay = parseInt(sticklet.getAttribute('data-timing-delay')) || 0;
-		var animationAppear = sticklet.getAttribute('data-animation-appear') || 'none';
-		var animationExit = sticklet.getAttribute('data-animation-exit') || 'none';
+		var animationAppear = getAnimationValue(sticklet.getAttribute('data-animation-appear') || 'none', 'appear');
+		var animationExit = getAnimationValue(sticklet.getAttribute('data-animation-exit') || 'none', 'exit');
+		var durationTimer = null;
+		sticklet._sticklets_closed = false;
 
 		if (!checkFrequency(sticklet)) {
 			sticklet.parentNode.removeChild(sticklet);
 			return;
 		}
 
-		calculateCenterPosition(sticklet);
+		calculateSizeAndPosition(sticklet);
 		handleAction(sticklet);
 		handleEarlyExit(sticklet);
 
+		// Recalculate size/position on window resize while the sticklet is visible (debounced).
+		var resizeHandler = debounce(function() {
+			calculateSizeAndPosition(sticklet);
+		}, 150);
+		window.addEventListener('resize', resizeHandler);
+		// store reference for other handlers to remove when the sticklet is hidden
+		sticklet._sticklets_resizeHandler = resizeHandler;
+
 		function appear() {
+			consumeFrequency(sticklet);
 			sticklet.classList.remove('sticklet--hidden');
 
 			if (animationAppear !== 'none') {
 				sticklet.classList.add('sticklet--animate-' + animationAppear);
 
-				sticklet.addEventListener('animationend', function handler() {
+				sticklet.addEventListener('animationend', function handler(event) {
+					if (event.target !== sticklet || event.animationName !== getAnimationName(animationAppear)) {
+						return;
+					}
 					sticklet.classList.remove('sticklet--animate-' + animationAppear);
 					sticklet.removeEventListener('animationend', handler);
 				});
 			}
 
 			if (duration > 0) {
-				var exitDelay = delay + duration;
 
-				setTimeout(function() {
-					if (!sticklet || !sticklet.parentNode) {
+				durationTimer = setTimeout(function() {
+					durationTimer = null;
+					sticklet._sticklets_durationTimer = null;
+					if (sticklet._sticklets_closed) {
 						return;
+					}
+					if (!sticklet || !sticklet.parentNode) {
+            // ensure resize handler cleaned up
+            if (sticklet && sticklet._sticklets_resizeHandler) {
+              window.removeEventListener('resize', sticklet._sticklets_resizeHandler);
+              delete sticklet._sticklets_resizeHandler;
+            }
+            return;
 					}
 
 					if (animationExit !== 'none') {
 						sticklet.classList.add('sticklet--animate-' + animationExit);
 
-						sticklet.addEventListener('animationend', function handler() {
+						sticklet.addEventListener('animationend', function handler(event) {
+							if (event.target !== sticklet || event.animationName !== getAnimationName(animationExit)) {
+								return;
+							}
 							if (sticklet) {
 								sticklet.classList.remove('sticklet--animate-' + animationExit);
 								sticklet.classList.add('sticklet--hidden');
 							}
 							sticklet.removeEventListener('animationend', handler);
-						});
+								// cleanup after animation completes
+								if (sticklet && sticklet._sticklets_resizeHandler) {
+									window.removeEventListener('resize', sticklet._sticklets_resizeHandler);
+									delete sticklet._sticklets_resizeHandler;
+								}
+							});
 					} else if (sticklet) {
 						sticklet.classList.add('sticklet--hidden');
+							// cleanup when hidden without animation
+							if (sticklet && sticklet._sticklets_resizeHandler) {
+								window.removeEventListener('resize', sticklet._sticklets_resizeHandler);
+								delete sticklet._sticklets_resizeHandler;
+							}
 					}
-				}, exitDelay);
+				}, duration);
+				sticklet._sticklets_durationTimer = durationTimer;
 			}
 		}
 
@@ -183,36 +268,57 @@
 	}
 
 	function handleEarlyExit(sticklet) {
-		var animationExit = sticklet.getAttribute('data-animation-exit') || 'none';
+		var animationExit = getAnimationValue(sticklet.getAttribute('data-animation-exit') || 'none', 'exit');
 
 		sticklet.addEventListener('click', function(e) {
 			if (!sticklet || !sticklet.parentNode) {
 				return;
 			}
 
+			sticklet._sticklets_closed = true;
+			if (sticklet._sticklets_durationTimer) {
+				clearTimeout(sticklet._sticklets_durationTimer);
+				sticklet._sticklets_durationTimer = null;
+			}
+
 			if (animationExit !== 'none') {
 				sticklet.classList.add('sticklet--animate-' + animationExit);
 
-				sticklet.addEventListener('animationend', function handler() {
+				sticklet.addEventListener('animationend', function handler(event) {
+					if (event.target !== sticklet || event.animationName !== getAnimationName(animationExit)) {
+						return;
+					}
 					if (sticklet) {
 						sticklet.classList.remove('sticklet--animate-' + animationExit);
 						sticklet.classList.add('sticklet--hidden');
 					}
 					sticklet.removeEventListener('animationend', handler);
+					// cleanup resize handler
+					if (sticklet && sticklet._sticklets_resizeHandler) {
+						window.removeEventListener('resize', sticklet._sticklets_resizeHandler);
+						delete sticklet._sticklets_resizeHandler;
+					}
 				});
 			} else if (sticklet) {
 				sticklet.classList.add('sticklet--hidden');
+				if (sticklet._sticklets_resizeHandler) {
+					window.removeEventListener('resize', sticklet._sticklets_resizeHandler);
+					delete sticklet._sticklets_resizeHandler;
+				}
 			}
 		});
 	}
 
-	function isElementInViewport(el) {
-		var rect = el.getBoundingClientRect();
-		return (
-			rect.top <= (window.innerHeight || document.documentElement.clientHeight) &&
-			rect.bottom >= 0
-		);
-	}
+  function isElementInViewport(el, offset) {
+    var rect = el.getBoundingClientRect();
+    var viewportHeight = window.innerHeight || document.documentElement.clientHeight;
+    offset = offset || 0;
+
+    return (
+      rect.top <= viewportHeight + offset &&
+      rect.bottom >= -offset
+    );
+  }
 
 	function initSticklet(sticklet) {
 		var trigger = sticklet.getAttribute('data-trigger');
@@ -234,32 +340,32 @@
 			scrollHandler();
 		}
 
-		if (trigger === 'scroll_element') {
-			var selector = sticklet.getAttribute('data-trigger-scroll-element');
-			var offset = parseInt(sticklet.getAttribute('data-trigger-scroll-element-offset')) || 0;
-			if (selector) {
-				var targetEl = document.querySelector(selector);
-				if (targetEl) {
-					var checkVisibility = function() {
-						var rect = targetEl.getBoundingClientRect();
-						var viewportHeight = window.innerHeight || document.documentElement.clientHeight;
-						if (rect.top <= viewportHeight + offset && rect.bottom >= -offset) {
-							showSticklet(sticklet);
-							window.removeEventListener('scroll', checkVisibility);
-							window.removeEventListener('resize', checkVisibility);
-						}
-					};
-					window.addEventListener('scroll', checkVisibility);
-					window.addEventListener('resize', checkVisibility);
-					checkVisibility();
-				}
-			}
-		}
+    if (trigger === 'scroll_element') {
+      var selector = sticklet.getAttribute('data-trigger-scroll-element');
+      var offset = parseInt(sticklet.getAttribute('data-trigger-scroll-element-offset')) || 0;
+
+      if (selector) {
+        var targetEl = getQueryElement(selector);
+
+        if (targetEl) {
+          var checkVisibility = function() {
+            if (isElementInViewport(targetEl, offset)) {
+              showSticklet(sticklet);
+              window.removeEventListener('scroll', checkVisibility);
+              window.removeEventListener('resize', checkVisibility);
+            }
+          };
+          window.addEventListener('scroll', checkVisibility);
+          window.addEventListener('resize', checkVisibility);
+          checkVisibility();
+        }
+      }
+    }
 
 		if (trigger === 'click_element') {
 			var clickSelector = sticklet.getAttribute('data-trigger-click-element');
 			if (clickSelector) {
-				var clickTargetEl = document.querySelector(clickSelector);
+				var clickTargetEl = getQueryElement(clickSelector);
 				if (clickTargetEl) {
 					var clickHandler = function() {
 						showSticklet(sticklet);
@@ -273,13 +379,18 @@
 		if (trigger === 'scroll_bottom') {
 			var bottomOffset = parseInt(sticklet.getAttribute('data-trigger-scroll-bottom-offset')) || 0;
 			var bottomHandler = function() {
-				var scrollBottom = window.scrollY + window.innerHeight;
-				var pageBottom = document.body.scrollHeight - bottomOffset;
-				if (scrollBottom >= pageBottom) {
-					showSticklet(sticklet);
-					window.removeEventListener('scroll', bottomHandler);
-				}
-			};
+        var scrollBottom = window.scrollY + window.innerHeight;
+        var pageHeight = Math.max(
+          document.body.scrollHeight,
+          document.documentElement.scrollHeight
+        );
+        var pageBottom = pageHeight - bottomOffset;
+
+        if (scrollBottom >= pageBottom) {
+          showSticklet(sticklet);
+          window.removeEventListener('scroll', bottomHandler);
+        }
+      };
 			window.addEventListener('scroll', bottomHandler);
 			bottomHandler();
 		}
