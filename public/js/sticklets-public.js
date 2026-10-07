@@ -60,7 +60,7 @@
 	function handleAction(sticklet) {
 		var action = sticklet.getAttribute('data-action') || 'none';
 
-		if (action === 'scroll' || action === 'scrolltop') {
+		if (action === 'scroll' || action === 'scroll-top') {
 			var actionLink = sticklet.querySelector('.sticklet__action');
 			if (!actionLink) {
 				return;
@@ -71,7 +71,7 @@
 
 				if (action === 'scroll') {
 					var selector = sticklet.getAttribute('data-action-scroll-to');
-					var offset = parseInt(sticklet.getAttribute('data-action-scroll-offset')) || 0;
+					var offset = parseInt(sticklet.getAttribute('data-action-scroll-to-offset')) || 0;
 
 					if (selector) {
 						var target = getQueryElement(selector);
@@ -80,8 +80,9 @@
 							window.scrollTo({ top: top, behavior: 'smooth' });
 						}
 					}
-				} else if (action === 'scrolltop') {
-					window.scrollTo({ top: 0, behavior: 'smooth' });
+				} else if (action === 'scroll-top') {
+          var offset = parseInt(sticklet.getAttribute('data-action-scroll-top-offset')) || 0;
+					window.scrollTo({ top: offset, behavior: 'smooth' });
 				}
 			});
 		}
@@ -92,11 +93,11 @@
 		var positionX = sticklet.getAttribute('data-position-x');
 		var offsetX = parseInt(sticklet.getAttribute('data-position-offset-x')) || 0;
 		var offsetY = parseInt(sticklet.getAttribute('data-position-offset-y')) || 0;
-		var sizeWidth = parseInt(sticklet.getAttribute('data-size-width')) || 0;
-		var sizeHeight = parseInt(sticklet.getAttribute('data-size-height')) || 0;
+		var sizeWidth = parseInt(sticklet.getAttribute('data-size-width')) || 100;
+		var sizeHeight = parseInt(sticklet.getAttribute('data-size-height')) || 100;
 		var sizeMobile = parseInt(sticklet.getAttribute('data-size-mobile')) || 0;
-		var sizeMobileWidth = parseInt(sticklet.getAttribute('data-size-mobile-width')) || 0;
-		var sizeMobileHeight = parseInt(sticklet.getAttribute('data-size-mobile-height')) || 0;
+		var sizeMobileWidth = parseInt(sticklet.getAttribute('data-size-mobile-width')) || 32;
+		var sizeMobileHeight = parseInt(sticklet.getAttribute('data-size-mobile-height')) || 32;
 
 		var windowWidth = window.innerWidth || document.documentElement.clientWidth;
 		var windowHeight = window.innerHeight || document.documentElement.clientHeight;
@@ -159,8 +160,8 @@
 
 	function getAnimationValue(value, type) {
 		var allowed = type === 'appear'
-			? ['none', 'fade-in', 'slide-up', 'slide-down', 'slide-left', 'slide-right']
-			: ['none', 'fade-out', 'slide-up-out', 'slide-down-out', 'slide-left-out', 'slide-right-out'];
+			? ['show', 'fade-in', 'slide-up', 'slide-down', 'slide-left', 'slide-right']
+			: ['hide', 'fade-out', 'slide-up-out', 'slide-down-out', 'slide-left-out', 'slide-right-out'];
 
 		return allowed.indexOf(value) !== -1 ? value : 'none';
 	}
@@ -172,10 +173,10 @@
 	}
 
 	function showSticklet(sticklet) {
-		var duration = parseInt(sticklet.getAttribute('data-timing-duration')) || 0;
+		var duration = parseInt(sticklet.getAttribute('data-timing-duration')) || 2500;
 		var delay = parseInt(sticklet.getAttribute('data-timing-delay')) || 0;
-		var animationAppear = getAnimationValue(sticklet.getAttribute('data-animation-appear') || 'none', 'appear');
-		var animationExit = getAnimationValue(sticklet.getAttribute('data-animation-exit') || 'none', 'exit');
+		var animationAppear = getAnimationValue(sticklet.getAttribute('data-animation-appear') || 'show', 'appear');
+		var animationExit = getAnimationValue(sticklet.getAttribute('data-animation-exit') || 'hide', 'exit');
 		var durationTimer = null;
 		sticklet._sticklets_closed = false;
 
@@ -200,7 +201,7 @@
 			consumeFrequency(sticklet);
 			sticklet.classList.remove('sticklet--hidden');
 
-			if (animationAppear !== 'none') {
+			if (animationAppear !== 'show') {
 				sticklet.classList.add('sticklet--animate-' + animationAppear);
 
 				sticklet.addEventListener('animationend', function handler(event) {
@@ -229,7 +230,7 @@
             return;
 					}
 
-					if (animationExit !== 'none') {
+					if (animationExit !== 'hide') {
 						sticklet.classList.add('sticklet--animate-' + animationExit);
 
 						sticklet.addEventListener('animationend', function handler(event) {
@@ -268,7 +269,7 @@
 	}
 
 	function handleEarlyExit(sticklet) {
-		var animationExit = getAnimationValue(sticklet.getAttribute('data-animation-exit') || 'none', 'exit');
+		var animationExit = getAnimationValue(sticklet.getAttribute('data-animation-exit') || 'hide', 'exit');
 
 		sticklet.addEventListener('click', function(e) {
 			if (!sticklet || !sticklet.parentNode) {
@@ -281,7 +282,7 @@
 				sticklet._sticklets_durationTimer = null;
 			}
 
-			if (animationExit !== 'none') {
+			if (animationExit !== 'hide') {
 				sticklet.classList.add('sticklet--animate-' + animationExit);
 
 				sticklet.addEventListener('animationend', function handler(event) {
@@ -328,7 +329,7 @@
 			return;
 		}
 
-		if (trigger === 'scroll_px') {
+		if (trigger === 'scroll-px') {
 			var px = parseInt(sticklet.getAttribute('data-trigger-scroll-px')) || 0;
 			var scrollHandler = function() {
 				if (window.scrollY >= px) {
@@ -340,7 +341,7 @@
 			scrollHandler();
 		}
 
-    if (trigger === 'scroll_element') {
+    if (trigger === 'scroll-element') {
       var selector = sticklet.getAttribute('data-trigger-scroll-element');
       var offset = parseInt(sticklet.getAttribute('data-trigger-scroll-element-offset')) || 0;
 
@@ -362,7 +363,7 @@
       }
     }
 
-		if (trigger === 'click_element') {
+		if (trigger === 'click-element') {
 			var clickSelector = sticklet.getAttribute('data-trigger-click-element');
 			if (clickSelector) {
 				var clickTargetEl = getQueryElement(clickSelector);
@@ -376,7 +377,7 @@
 			}
 		}
 
-		if (trigger === 'scroll_bottom') {
+		if (trigger === 'scroll-bottom') {
 			var bottomOffset = parseInt(sticklet.getAttribute('data-trigger-scroll-bottom-offset')) || 0;
 			var bottomHandler = function() {
         var scrollBottom = window.scrollY + window.innerHeight;

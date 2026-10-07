@@ -19,25 +19,27 @@
 		$('input[name="sticklet_trigger"]').on('change', function() {
 			var val = $(this).val();
 			$('.trigger-scroll-px, .trigger-scroll-element, .trigger-click-element, .trigger-scroll-bottom').slideUp(200);
-			if (val === 'scroll_px') {
+			if (val === 'scroll-px') {
 				$('.trigger-scroll-px').slideDown(200);
-			} else if (val === 'scroll_element') {
+			} else if (val === 'scroll-element') {
 				$('.trigger-scroll-element').slideDown(200);
-			} else if (val === 'click_element') {
+			} else if (val === 'click-element') {
 				$('.trigger-click-element').slideDown(200);
-			} else if (val === 'scroll_bottom') {
+			} else if (val === 'scroll-bottom') {
 				$('.trigger-scroll-bottom').slideDown(200);
 			}
 		});
 
 		$('input[name="sticklet_action"]').on('change', function() {
 			var val = $(this).val();
-			$('.action-url, .action-scroll').slideUp(200);
+			$('.action-url, .action-scroll, .action-scroll-top').slideUp(200);
 			if (val === 'url') {
 				$('.action-url').slideDown(200);
 			} else if (val === 'scroll') {
 				$('.action-scroll').slideDown(200);
-			}
+			} else if (val === 'scroll-top') {
+        $('.action-scroll-top').slideDown(200);
+      }
 		});
 
     $('#sticklet_size_mobile').on('change', function() {
