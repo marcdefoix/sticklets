@@ -4,15 +4,17 @@ Floating stickers for WordPress. Display image stickers with advanced visibility
 
 ## Features
 
-- Custom post type for unlimited stickers
-- Visibility rules: entire site, homepage, posts page, search, 404, or specific IDs
-- Trigger modes: on page load, after scroll, when element is visible, on page bottom
-- Timing controls: delay and duration
-- Size options: original or cropped
-- Position: 9 positions with X/Y offsets
-- Animations: fade and slide effects for appear and exit
-- Clickable stickers with custom URLs
-- Uses native WordPress featured image
+- Custom post type for creating unlimited Sticklets
+- Flexible visibility rules for site-wide or specific locations
+- Multiple triggers: page load, scroll distance, viewport visibility, element click, or page bottom
+- Configurable display delay and duration
+- Responsive desktop and mobile sizing
+- 9 screen positions with horizontal and vertical offsets
+- Entrance and exit animations with fade and slide effects
+- Click actions: custom URL, new tab, scroll-to-element, or scroll-to-top
+- Display frequency controls
+- Uses the native WordPress featured image
+- Lightweight frontend with no external JavaScript dependencies
 
 ## Installation
 
